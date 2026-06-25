@@ -1,0 +1,416 @@
+import type { Country } from "@/types/nomadindex";
+
+export const countries = [
+  {
+    id: "pt",
+    slug: "portugal",
+    name: "Portugal",
+    region: "Europe",
+    flagEmoji: "🇵🇹",
+    summary:
+      "Popular EU base with established passive-income and remote-work pathways, mild climate and growing startup hubs in Lisbon and Porto.",
+    currency: "EUR",
+    capital: "Lisbon",
+    hasDigitalNomadVisa: true,
+    hasFreelancerVisa: false,
+    hasStartupVisa: true,
+    citizenshipYears: 5,
+    lastUpdated: "2026-03-01",
+    lastReviewed: "2026-06-23",
+    featured: true,
+  },
+  {
+    id: "es",
+    slug: "spain",
+    name: "Spain",
+    region: "Europe",
+    flagEmoji: "🇪🇸",
+    summary:
+      "Large EU market with a dedicated digital nomad visa, strong lifestyle appeal and regional tax incentives for new residents.",
+    currency: "EUR",
+    capital: "Madrid",
+    hasDigitalNomadVisa: true,
+    hasFreelancerVisa: true,
+    hasStartupVisa: true,
+    citizenshipYears: 10,
+    lastUpdated: "2026-03-01",
+    lastReviewed: "2026-06-23",
+    featured: true,
+  },
+  {
+    id: "ae",
+    slug: "uae",
+    name: "UAE",
+    region: "Middle East",
+    flagEmoji: "🇦🇪",
+    summary:
+      "Tax-friendly Gulf hub with remote-work and long-term residence options across Dubai and Abu Dhabi free zones.",
+    currency: "AED",
+    capital: "Abu Dhabi",
+    hasDigitalNomadVisa: true,
+    hasFreelancerVisa: true,
+    hasStartupVisa: false,
+    citizenshipYears: null,
+    lastUpdated: "2026-03-01",
+    lastReviewed: "2026-06-23",
+    featured: true,
+  },
+  {
+    id: "th",
+    slug: "thailand",
+    name: "Thailand",
+    region: "Asia",
+    flagEmoji: "🇹🇭",
+    summary:
+      "Southeast Asian lifestyle destination with DTV, LTR and specialist visa routes for remote workers and professionals.",
+    currency: "THB",
+    capital: "Bangkok",
+    hasDigitalNomadVisa: true,
+    hasFreelancerVisa: false,
+    hasStartupVisa: false,
+    citizenshipYears: null,
+    lastUpdated: "2026-03-01",
+    lastReviewed: "2026-06-23",
+  },
+  {
+    id: "ee",
+    slug: "estonia",
+    name: "Estonia",
+    region: "Europe",
+    flagEmoji: "🇪🇪",
+    summary:
+      "Digital-first EU member known for e-Residency, straightforward bureaucracy and a compact digital nomad visa program.",
+    currency: "EUR",
+    capital: "Tallinn",
+    hasDigitalNomadVisa: true,
+    hasFreelancerVisa: false,
+    hasStartupVisa: true,
+    citizenshipYears: 8,
+    lastUpdated: "2026-03-01",
+    lastReviewed: "2026-06-23",
+  },
+  {
+    id: "de",
+    slug: "germany",
+    name: "Germany",
+    region: "Europe",
+    flagEmoji: "🇩🇪",
+    summary:
+      "Europe's largest economy with freelancer and opportunity-card routes, strong infrastructure and EU market access.",
+    currency: "EUR",
+    capital: "Berlin",
+    hasDigitalNomadVisa: false,
+    hasFreelancerVisa: true,
+    hasStartupVisa: false,
+    citizenshipYears: 8,
+    lastUpdated: "2026-03-01",
+    lastReviewed: "2026-06-23",
+  },
+  {
+    id: "it",
+    slug: "italy",
+    name: "Italy",
+    region: "Europe",
+    flagEmoji: "🇮🇹",
+    summary:
+      "EU destination with a digital nomad visa, elective residency for passive income and regional startup incentives.",
+    currency: "EUR",
+    capital: "Rome",
+    hasDigitalNomadVisa: true,
+    hasFreelancerVisa: false,
+    hasStartupVisa: true,
+    citizenshipYears: 10,
+    lastUpdated: "2026-03-01",
+    lastReviewed: "2026-06-23",
+  },
+  {
+    id: "gr",
+    slug: "greece",
+    name: "Greece",
+    region: "Europe",
+    flagEmoji: "🇬🇷",
+    summary:
+      "Mediterranean EU member offering digital nomad and financial-independence visas with competitive tax regimes for new residents.",
+    currency: "EUR",
+    capital: "Athens",
+    hasDigitalNomadVisa: true,
+    hasFreelancerVisa: false,
+    hasStartupVisa: false,
+    citizenshipYears: 7,
+    lastUpdated: "2026-03-01",
+    lastReviewed: "2026-06-23",
+  },
+  {
+    id: "mt",
+    slug: "malta",
+    name: "Malta",
+    region: "Europe",
+    flagEmoji: "🇲🇹",
+    summary:
+      "Compact English-speaking EU island with nomad residence permits and established routes for remote workers and founders.",
+    currency: "EUR",
+    capital: "Valletta",
+    hasDigitalNomadVisa: true,
+    hasFreelancerVisa: false,
+    hasStartupVisa: true,
+    citizenshipYears: 5,
+    lastUpdated: "2026-03-01",
+    lastReviewed: "2026-06-23",
+  },
+  {
+    id: "nl",
+    slug: "netherlands",
+    name: "Netherlands",
+    region: "Europe",
+    flagEmoji: "🇳🇱",
+    summary:
+      "Highly connected EU hub with self-employment and startup visa pathways, though requirements tend to be stringent.",
+    currency: "EUR",
+    capital: "Amsterdam",
+    hasDigitalNomadVisa: false,
+    hasFreelancerVisa: true,
+    hasStartupVisa: true,
+    citizenshipYears: 5,
+    lastUpdated: "2026-03-01",
+    lastReviewed: "2026-06-23",
+  },
+  {
+    id: "hr",
+    slug: "croatia",
+    name: "Croatia",
+    region: "Europe",
+    flagEmoji: "🇭🇷",
+    summary:
+      "EU member with a straightforward digital nomad permit, Adriatic lifestyle appeal and Schengen access.",
+    currency: "EUR",
+    capital: "Zagreb",
+    hasDigitalNomadVisa: true,
+    hasFreelancerVisa: false,
+    hasStartupVisa: false,
+    citizenshipYears: 8,
+    lastUpdated: "2026-03-01",
+    lastReviewed: "2026-06-23",
+  },
+  {
+    id: "cz",
+    slug: "czech-republic",
+    name: "Czech Republic",
+    region: "Europe",
+    flagEmoji: "🇨🇿",
+    summary:
+      "Central European base with freelancer trade-license routes and growing remote-work appeal in Prague and Brno.",
+    currency: "CZK",
+    capital: "Prague",
+    hasDigitalNomadVisa: false,
+    hasFreelancerVisa: true,
+    hasStartupVisa: true,
+    citizenshipYears: 10,
+    lastUpdated: "2026-03-01",
+    lastReviewed: "2026-06-23",
+  },
+  {
+    id: "hu",
+    slug: "hungary",
+    name: "Hungary",
+    region: "Europe",
+    flagEmoji: "🇭🇺",
+    summary:
+      "Affordable EU destination with White Card remote-work permits and investor residence options in Budapest.",
+    currency: "EUR",
+    capital: "Budapest",
+    hasDigitalNomadVisa: true,
+    hasFreelancerVisa: false,
+    hasStartupVisa: false,
+    citizenshipYears: 8,
+    lastUpdated: "2026-03-01",
+    lastReviewed: "2026-06-23",
+  },
+  {
+    id: "ro",
+    slug: "romania",
+    name: "Romania",
+    region: "Europe",
+    flagEmoji: "🇷🇴",
+    summary:
+      "Lower-cost EU member with a digital nomad visa and growing tech scene in Bucharest and Cluj-Napoca.",
+    currency: "EUR",
+    capital: "Bucharest",
+    hasDigitalNomadVisa: true,
+    hasFreelancerVisa: true,
+    hasStartupVisa: false,
+    citizenshipYears: 8,
+    lastUpdated: "2026-03-01",
+    lastReviewed: "2026-06-23",
+  },
+  {
+    id: "cy",
+    slug: "cyprus",
+    name: "Cyprus",
+    region: "Europe",
+    flagEmoji: "🇨🇾",
+    summary:
+      "Mediterranean island with digital nomad permits, favorable tax frameworks and EU access for qualifying residents.",
+    currency: "EUR",
+    capital: "Nicosia",
+    hasDigitalNomadVisa: true,
+    hasFreelancerVisa: false,
+    hasStartupVisa: true,
+    citizenshipYears: 7,
+    lastUpdated: "2026-03-01",
+    lastReviewed: "2026-06-23",
+  },
+  {
+    id: "fr",
+    slug: "france",
+    name: "France",
+    region: "Europe",
+    flagEmoji: "🇫🇷",
+    summary:
+      "Major EU economy with talent-passport and long-stay visitor routes for professionals, founders and remote workers.",
+    currency: "EUR",
+    capital: "Paris",
+    hasDigitalNomadVisa: false,
+    hasFreelancerVisa: false,
+    hasStartupVisa: true,
+    citizenshipYears: 5,
+    lastUpdated: "2026-03-01",
+    lastReviewed: "2026-06-23",
+  },
+  {
+    id: "ie",
+    slug: "ireland",
+    name: "Ireland",
+    region: "Europe",
+    flagEmoji: "🇮🇪",
+    summary:
+      "English-speaking EU hub with critical-skills and Stamp 0 routes for self-sufficient remote workers and retirees.",
+    currency: "EUR",
+    capital: "Dublin",
+    hasDigitalNomadVisa: false,
+    hasFreelancerVisa: false,
+    hasStartupVisa: false,
+    citizenshipYears: 5,
+    lastUpdated: "2026-03-01",
+    lastReviewed: "2026-06-23",
+  },
+  {
+    id: "gb",
+    slug: "uk",
+    name: "United Kingdom",
+    region: "Europe",
+    flagEmoji: "🇬🇧",
+    summary:
+      "Global financial and tech hub with innovator-founder and global-talent routes; no dedicated digital nomad visa.",
+    currency: "GBP",
+    capital: "London",
+    hasDigitalNomadVisa: false,
+    hasFreelancerVisa: false,
+    hasStartupVisa: true,
+    citizenshipYears: 6,
+    lastUpdated: "2026-03-01",
+    lastReviewed: "2026-06-23",
+  },
+  {
+    id: "ca",
+    slug: "canada",
+    name: "Canada",
+    region: "North America",
+    flagEmoji: "🇨🇦",
+    summary:
+      "Large North American market with self-employed, startup and open work permit pathways for skilled professionals.",
+    currency: "CAD",
+    capital: "Ottawa",
+    hasDigitalNomadVisa: false,
+    hasFreelancerVisa: true,
+    hasStartupVisa: true,
+    citizenshipYears: 5,
+    lastUpdated: "2026-03-01",
+    lastReviewed: "2026-06-23",
+  },
+  {
+    id: "au",
+    slug: "australia",
+    name: "Australia",
+    region: "Oceania",
+    flagEmoji: "🇦🇺",
+    summary:
+      "Points-based skilled migration with business innovation and talent routes; remote-work visitor options are limited.",
+    currency: "AUD",
+    capital: "Canberra",
+    hasDigitalNomadVisa: false,
+    hasFreelancerVisa: false,
+    hasStartupVisa: true,
+    citizenshipYears: 4,
+    lastUpdated: "2026-03-01",
+    lastReviewed: "2026-06-23",
+  },
+  {
+    id: "nz",
+    slug: "new-zealand",
+    name: "New Zealand",
+    region: "Oceania",
+    flagEmoji: "🇳🇿",
+    summary:
+      "Skilled migrant and entrepreneur visa pathways with high quality of life; dedicated nomad routes remain limited.",
+    currency: "NZD",
+    capital: "Wellington",
+    hasDigitalNomadVisa: false,
+    hasFreelancerVisa: false,
+    hasStartupVisa: true,
+    citizenshipYears: 5,
+    lastUpdated: "2026-03-01",
+    lastReviewed: "2026-06-23",
+  },
+  {
+    id: "sg",
+    slug: "singapore",
+    name: "Singapore",
+    region: "Asia",
+    flagEmoji: "🇸🇬",
+    summary:
+      "Major Asian business hub with employment pass and tech pass routes for professionals and founders.",
+    currency: "SGD",
+    capital: "Singapore",
+    hasDigitalNomadVisa: false,
+    hasFreelancerVisa: false,
+    hasStartupVisa: false,
+    citizenshipYears: null,
+    lastUpdated: "2026-03-01",
+    lastReviewed: "2026-06-23",
+  },
+] satisfies Country[];
+
+export type CountrySlug = (typeof countries)[number]["slug"];
+
+const countryBySlug = new Map(countries.map((c) => [c.slug, c]));
+
+export function getCountryBySlug(slug: string): Country | undefined {
+  return countryBySlug.get(slug as CountrySlug);
+}
+
+export function getFeaturedCountries(): Country[] {
+  return countries.filter((c) => c.featured === true);
+}
+
+export function getAllCountries(): Country[] {
+  return [...countries];
+}
+
+export function getComparisonPageCount(): number {
+  const n = countries.length;
+  return (n * (n - 1)) / 2;
+}
+
+export function getRelatedCountries(
+  slug: string,
+  limit = 3
+): Country[] {
+  const country = getCountryBySlug(slug);
+  if (!country) {
+    return [];
+  }
+
+  return countries
+    .filter((c) => c.slug !== slug && c.region === country.region)
+    .slice(0, limit);
+}

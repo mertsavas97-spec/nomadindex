@@ -1,65 +1,266 @@
-import Image from "next/image";
+import type { Metadata } from "next";
+import Link from "next/link";
+import {
+  Calculator,
+  MapPin,
+  Scale,
+  Sparkles,
+} from "lucide-react";
+
+import { CountryCard } from "@/components/country-card";
+import { FeaturedComparisons } from "@/components/home/featured-comparisons";
+import { FeaturedVisas } from "@/components/home/featured-visas";
+import { HomeValueIntro } from "@/components/home/home-value-intro";
+import { HomepageCta } from "@/components/home/homepage-cta";
+import { HomeSectionHeader } from "@/components/home/home-section-header";
+import { HowNomadIndexWorks } from "@/components/home/how-nomadindex-works";
+import { LatestGuides } from "@/components/home/latest-guides";
+import { TrustedSources } from "@/components/home/trusted-sources";
+import { WhyNomadIndex } from "@/components/home/why-nomadindex";
+import { HomeHero } from "@/components/home-hero";
+import { SemanticKeyTakeaways } from "@/components/semantic/semantic-key-takeaways";
+import { SemanticSummaryBlock } from "@/components/semantic/semantic-summary-block";
+import { JsonLd } from "@/components/seo/json-ld";
+import { SiteFooter } from "@/components/site-footer";
+import { SiteHeader } from "@/components/site-header";
+import { ToolCard } from "@/components/tool-card";
+import {
+  getAllCountries,
+  getAllVisaPrograms,
+  getComparisonPageCount,
+  getFeaturedCountries,
+  getVisasByCountry,
+} from "@/data";
+import {
+  absoluteUrl,
+  buildFaqPageJsonLd,
+  buildItemListJsonLd,
+  buildOrganizationJsonLd,
+  buildWebSiteJsonLd,
+  createPageMetadata,
+  HOMEPAGE_DESCRIPTION,
+  HOMEPAGE_FAQS,
+  HOMEPAGE_TITLE,
+} from "@/lib/seo";
+
+export const metadata: Metadata = createPageMetadata({
+  title: HOMEPAGE_TITLE,
+  description: HOMEPAGE_DESCRIPTION,
+  path: "/",
+});
+
+const tools = [
+  {
+    title: "Visa Pathway Matcher",
+    description:
+      "Answer a few questions to see which visa programs may match dataset criteria across 22 countries.",
+    icon: Sparkles,
+    href: "/tools/visa-eligibility-checker",
+  },
+  {
+    title: "Income Requirement Calculator",
+    description:
+      "Convert minimum income thresholds to your currency and compare affordability by country.",
+    icon: Calculator,
+    href: "/tools/income-requirement-calculator",
+  },
+  {
+    title: "Relocation Cost Calculator",
+    description:
+      "Estimate visa fees, income buffers and rough setup costs for your target destination.",
+    icon: MapPin,
+    href: "/tools/relocation-cost-calculator",
+  },
+  {
+    title: "Country Comparison Tool",
+    description:
+      "Build custom side-by-side comparisons across visas, taxes, costs and quality of life.",
+    icon: Scale,
+    href: "/tools/country-comparison-tool",
+  },
+] as const;
+
+const SECTION_ALT = "border-t border-border/60 bg-neutral-bg/40 py-16 sm:py-24";
+const SECTION_BASE = "border-t border-border/60 py-16 sm:py-24";
 
 export default function Home() {
+  const countries = getAllCountries();
+  const visaPrograms = getAllVisaPrograms();
+  const featuredCountries = getFeaturedCountries();
+  const comparePageCount = getComparisonPageCount();
+
+  const featuredVisaItems = visaPrograms
+    .filter((v) => v.featured)
+    .slice(0, 6)
+    .map((v) => ({
+      name: v.name,
+      url: absoluteUrl(`/visas/${v.slug}`),
+    }));
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <>
+      <JsonLd
+        data={[
+          buildWebSiteJsonLd(),
+          buildOrganizationJsonLd(),
+          buildFaqPageJsonLd(HOMEPAGE_FAQS),
+          buildItemListJsonLd("Featured visa programs", featuredVisaItems),
+        ]}
+      />
+      <SiteHeader />
+
+      <main id="main-content" className="flex-1">
+        <HomeHero
+          countryCount={countries.length}
+          programCount={visaPrograms.length}
+          comparePageCount={comparePageCount}
+          toolCount={4}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+
+        <section className="border-b border-border/60 bg-neutral-bg/40 py-10 sm:py-12">
+          <div className="mx-auto max-w-6xl space-y-6 px-4 sm:px-6 lg:px-8">
+            <SemanticSummaryBlock label="Quick answer">
+              <p>
+                NomadIndex is a mobility intelligence database for comparing{" "}
+                <strong>visa</strong>, <strong>residency</strong> and{" "}
+                <strong>startup pathway</strong> options across 22 countries.
+                Use it to research <strong>digital nomad</strong>,{" "}
+                <strong>freelancer</strong> and <strong>founder</strong> routes
+                before <strong>relocation</strong> — with linked official sources
+                and verification labels on every program.
+              </p>
+            </SemanticSummaryBlock>
+            <SemanticKeyTakeaways
+              takeaways={[
+                `${countries.length} countries · ${visaPrograms.length} visa programs · ${comparePageCount} compare pages · 4 planning tools`,
+                "Structured fields: minimum income, fees, processing time, family inclusion, citizenship path",
+                "For remote workers, freelancers and founders comparing relocation options — not legal advice",
+                "Every page includes FAQs, dataset facts and links to methodology and sources",
+              ]}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+          </div>
+        </section>
+
+        {/* 1. Destinations */}
+        <section id="countries" className={`${SECTION_BASE} pt-12 sm:pt-16`}>
+          <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+            <HomeSectionHeader
+              eyebrow="Destinations"
+              title="Popular destinations"
+              description="Explore visa programs, income requirements and pathways to residency in top nomad-friendly countries."
+              href="/countries"
+              linkLabel={`All ${countries.length} countries`}
+            />
+
+            <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {featuredCountries.map((country) => (
+                <CountryCard
+                  key={country.id}
+                  country={country}
+                  visas={getVisasByCountry(country.slug)}
+                  href={`/countries/${country.slug}`}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* 2. Compare */}
+        <FeaturedComparisons
+          comparePageCount={comparePageCount}
+          className={SECTION_ALT}
+        />
+
+        {/* 3. Visa programs */}
+        <FeaturedVisas className={SECTION_BASE} />
+
+        {/* 4. How it works */}
+        <HowNomadIndexWorks
+          comparePageCount={comparePageCount}
+          className={SECTION_ALT}
+        />
+
+        {/* 5. Guides */}
+        <LatestGuides className={SECTION_BASE} />
+
+        {/* 6. Tools */}
+        <section id="tools" className={SECTION_ALT}>
+          <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+            <HomeSectionHeader
+              eyebrow="Tools"
+              title="Planning tools"
+              description="Interactive calculators and checkers to narrow your shortlist before verifying with official sources."
+              href="/tools"
+              linkLabel="All tools"
+            />
+
+            <div className="mt-10 grid gap-5 sm:grid-cols-2">
+              {tools.map((tool) => (
+                <ToolCard key={tool.title} {...tool} />
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* 7. What NomadIndex is */}
+        <HomeValueIntro className={SECTION_BASE} />
+
+        {/* 8. Why NomadIndex */}
+        <WhyNomadIndex className={SECTION_ALT} />
+
+        {/* 9. Data trust */}
+        <TrustedSources className={SECTION_BASE} />
+
+        {/* 10. FAQ */}
+        <section id="faq" className={SECTION_ALT}>
+          <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+            <HomeSectionHeader
+              eyebrow="FAQ"
+              title="Frequently asked questions"
+              description="Quick answers about what NomadIndex covers and how to use the data responsibly."
+            />
+
+            <dl className="mt-10 space-y-8">
+              {HOMEPAGE_FAQS.map((faq) => (
+                <div
+                  key={faq.question}
+                  className="rounded-2xl border border-border/60 bg-background p-6 shadow-sm"
+                >
+                  <dt className="font-heading text-lg font-semibold text-navy">
+                    {faq.question}
+                  </dt>
+                  <dd className="mt-2 text-sm leading-relaxed text-brand-muted">
+                    {faq.answer}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+
+            <p className="mt-8 text-sm text-brand-muted">
+              Need deeper context? Read our{" "}
+              <Link
+                href="/methodology"
+                className="font-medium text-primary-dark hover:text-primary"
+              >
+                data methodology
+              </Link>{" "}
+              or browse{" "}
+              <Link
+                href="/guides"
+                className="font-medium text-primary-dark hover:text-primary"
+              >
+                relocation guides
+              </Link>
+              .
+            </p>
+          </div>
+        </section>
+
+        {/* 11. Start planning */}
+        <HomepageCta className={`${SECTION_BASE} border-t-0`} />
       </main>
-    </div>
+
+      <SiteFooter />
+    </>
   );
 }

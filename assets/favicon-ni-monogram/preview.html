@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>NomadIndex — NI Monogram Favicon Preview</title>
+    <style>
+      :root {
+        --navy: #042c53;
+        --primary: #378add;
+        --ink: #2c2c2a;
+        --muted: #6b6a64;
+        --border: #e5e3dc;
+        --bg: #ffffff;
+        --chrome: #f1efe8;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+        background: #fafaf8;
+        color: var(--ink);
+        padding: 2rem;
+      }
+      h1 { font-size: 1.25rem; margin: 0 0 0.25rem; color: var(--navy); }
+      p { color: var(--muted); margin: 0 0 2rem; font-size: 0.9rem; }
+      .grid { display: grid; gap: 1.5rem; max-width: 960px; }
+      .card {
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.25rem;
+      }
+      .card h2 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin: 0 0 1rem; }
+      .sizes { display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: end; }
+      .size-item { text-align: center; font-size: 0.75rem; color: var(--muted); }
+      .size-item img { display: block; margin: 0 auto 0.35rem; image-rendering: pixelated; image-rendering: crisp-edges; }
+      .tabs {
+        display: flex;
+        gap: 0;
+        background: var(--chrome);
+        border: 1px solid var(--border);
+        border-radius: 10px 10px 0 0;
+        padding: 0.5rem 0.5rem 0;
+        overflow: hidden;
+      }
+      .tab {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.45rem 0.75rem;
+        font-size: 0.8rem;
+        border-radius: 8px 8px 0 0;
+        background: transparent;
+        color: var(--muted);
+        max-width: 200px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .tab.active { background: var(--bg); color: var(--ink); box-shadow: 0 -1px 0 var(--bg); }
+      .tab img { width: 16px; height: 16px; flex-shrink: 0; }
+      .tab-32 img { width: 32px; height: 32px; }
+      .dark .tabs { background: #202124; border-color: #3c4043; }
+      .dark .tab { color: #9aa0a6; }
+      .dark .tab.active { background: #292a2d; color: #e8eaed; }
+      .dark .card { background: #292a2d; border-color: #3c4043; color: #e8eaed; }
+      .row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+      @media (max-width: 640px) { .row { grid-template-columns: 1fr; } }
+      .badge { display: inline-block; background: #faeeda; color: #854f0b; font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: 999px; margin-bottom: 1rem; }
+    </style>
+  </head>
+  <body>
+    <span class="badge">Live in app — refresh preview to compare</span>
+    <h1>NI Monogram Favicon</h1>
+    <p>Geometric sans NI on navy. Open this file locally to review before implementation.</p>
+
+    <div class="grid">
+      <div class="card">
+        <h2>Scale test</h2>
+        <div class="sizes">
+          <div class="size-item"><img src="icon.svg" width="16" height="16" alt="" />16×16</div>
+          <div class="size-item"><img src="icon.svg" width="32" height="32" alt="" />32×32</div>
+          <div class="size-item"><img src="icon.svg" width="48" height="48" alt="" />48×48</div>
+          <div class="size-item"><img src="icon.svg" width="180" height="180" alt="" />180×180</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="card">
+          <h2>Chrome — light (16px tab)</h2>
+          <div class="tabs">
+            <div class="tab"><img src="icon.svg" alt="" />Other site</div>
+            <div class="tab active"><img src="icon.svg" alt="" />NomadIndex — Compare Visas</div>
+          </div>
+        </div>
+        <div class="card dark">
+          <h2>Chrome — dark (16px tab)</h2>
+          <div class="tabs">
+            <div class="tab"><img src="icon-dark-chrome.svg" alt="" />Other site</div>
+            <div class="tab active"><img src="icon-dark-chrome.svg" alt="" />NomadIndex — Compare Visas</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="card">
+          <h2>Primary SVG</h2>
+          <img src="icon.svg" width="128" height="128" alt="NI monogram primary" />
+        </div>
+        <div class="card">
+          <h2>Dark chrome variant</h2>
+          <img src="icon-dark-chrome.svg" width="128" height="128" alt="NI monogram dark chrome" />
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

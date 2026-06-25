@@ -1,0 +1,35 @@
+{
+  "sprint": 21,
+  "reviewDate": "2026-06-23",
+  "priorityCountries": [
+    "portugal",
+    "spain",
+    "uae",
+    "thailand",
+    "estonia",
+    "germany",
+    "italy",
+    "netherlands",
+    "malta",
+    "greece",
+    "croatia",
+    "france",
+    "canada",
+    "australia",
+    "uk"
+  ],
+  "recordsReviewed": 47,
+  "recordsChanged": 47,
+  "verificationStatus": {
+    "verified": 18,
+    "inProgress": 12,
+    "placeholder": 17
+  },
+  "productionConfidenceScore": 68,
+  "notes": [
+    "Verified figures sourced from official government portals (one.gob.es, IND.nl, gov.uk, vistos.mne.gov.pt, thaievisa.go.th).",
+    "Placeholder records retain null fees/times where official single values are unavailable.",
+    "France visitor visa income set to null — consulate-specific means test.",
+    "Guides and featured comparison static copy updated for Portugal/Spain income changes."
+  ]
+}
