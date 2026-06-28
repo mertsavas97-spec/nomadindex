@@ -13,6 +13,11 @@ type HomeHeroProps = {
   programCount: number;
   comparePageCount: number;
   toolCount: number;
+  eyebrow?: string;
+  title?: string;
+  subtitle?: string;
+  primaryCta?: { label: string; href: string };
+  secondaryCta?: { label: string; href: string };
 };
 
 type HeroMetricCellProps = {
@@ -46,7 +51,18 @@ export function HomeHero({
   programCount,
   comparePageCount,
   toolCount,
+  eyebrow = "Global mobility intelligence platform",
+  title = "Compare visa pathways before you relocate",
+  subtitle,
+  primaryCta = {
+    label: "Visa Pathway Matcher",
+    href: "/tools/visa-eligibility-checker",
+  },
+  secondaryCta = { label: "Compare countries", href: "/compare" },
 }: HomeHeroProps) {
+  const heroSubtitle =
+    subtitle ??
+    `NomadIndex helps founders, freelancers and remote workers compare ${programCount}+ visa programs across ${countryCount} countries — income rules, processing times and residency paths in one place.`;
   const metrics: HeroMetricCellProps[] = [
     { value: String(countryCount), label: "Countries", icon: Globe, href: "/countries" },
     { value: `${programCount}+`, label: "Visa programs", icon: Layers, href: "/visas" },
@@ -81,29 +97,27 @@ export function HomeHero({
             <div className="absolute inset-0 z-10 flex items-center">
               <div className="max-w-[560px] pl-8 pr-6 sm:pl-10 lg:pl-16 xl:pl-20">
                 <p className="inline-flex w-fit items-center rounded-full border border-primary/15 bg-white/70 px-3 py-1 text-[0.6875rem] font-semibold uppercase tracking-[0.2em] text-primary-dark backdrop-blur-sm sm:text-xs">
-                  Global mobility intelligence platform
+                  {eyebrow}
                 </p>
 
                 <h1 className="mt-4 font-heading text-4xl font-semibold leading-[0.98] tracking-tight text-navy sm:text-5xl lg:text-6xl xl:text-[4.25rem]">
-                  Compare visa pathways before you relocate
+                  {title}
                 </h1>
 
                 <p className="mt-4 max-w-[520px] text-base leading-relaxed text-brand-muted sm:text-lg">
-                  NomadIndex helps founders, freelancers and remote workers compare{" "}
-                  {programCount}+ visa programs across {countryCount} countries —
-                  income rules, processing times and residency paths in one place.
+                  {heroSubtitle}
                 </p>
 
                 <div className="mt-6 flex flex-wrap gap-3">
                   <Button asChild variant="navy" className="h-10 px-5 text-sm">
-                    <Link href="/tools/visa-eligibility-checker">
+                    <Link href={primaryCta.href}>
                       <Sparkles className="size-4" />
-                      Visa Pathway Matcher
+                      {primaryCta.label}
                     </Link>
                   </Button>
                   <Button asChild variant="outline" className="h-10 px-5 text-sm">
-                    <Link href="/compare">
-                      Compare countries
+                    <Link href={secondaryCta.href}>
+                      {secondaryCta.label}
                       <ArrowRight className="size-4" />
                     </Link>
                   </Button>

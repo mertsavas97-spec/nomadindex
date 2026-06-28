@@ -1,5 +1,6 @@
 import {
   comparisonDataToPreviewRows,
+  getAllCountryPairs,
   getCountryComparisonData,
   getFeaturedComparisonPairs,
 } from "@/data";
@@ -11,15 +12,24 @@ import { cn } from "@/lib/utils";
 type FeaturedComparisonsProps = {
   comparePageCount: number;
   className?: string;
+  pairSlugs?: string[];
 };
 
 export function FeaturedComparisons({
   comparePageCount,
   className,
+  pairSlugs,
 }: FeaturedComparisonsProps) {
-  const pairs = getFeaturedComparisonPairs();
+  const defaultPairs = getFeaturedComparisonPairs();
+  const allPairs = getAllCountryPairs();
+  const pairs = pairSlugs?.length
+    ? pairSlugs
+        .map((slug) => allPairs.find((pair) => pair.slug === slug))
+        .filter((pair): pair is NonNullable<typeof pair> => Boolean(pair))
+    : defaultPairs;
+  const resolvedPairs = pairs.length > 0 ? pairs : defaultPairs;
   const spotlight = getCountryComparisonData("portugal", "spain");
-  const cards = pairs
+  const cards = resolvedPairs
     .filter((pair) => pair.slug !== spotlight?.slug)
     .slice(0, 3)
     .map((pair) => getCountryComparisonData(pair.countryASlug, pair.countryBSlug))

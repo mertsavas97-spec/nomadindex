@@ -1,3 +1,4 @@
+import type { VisaProgram } from "@/types/nomadindex";
 import { getCountryBySlug, getFeaturedVisas } from "@/data";
 import { HomeSectionHeader } from "@/components/home/home-section-header";
 import { VisaProgramCard } from "@/components/visa-program-card";
@@ -5,10 +6,11 @@ import { cn } from "@/lib/utils";
 
 type FeaturedVisasProps = {
   className?: string;
+  programs?: VisaProgram[];
 };
 
-export function FeaturedVisas({ className }: FeaturedVisasProps) {
-  const programs = getFeaturedVisas();
+export function FeaturedVisas({ className, programs }: FeaturedVisasProps) {
+  const items = programs ?? getFeaturedVisas();
 
   return (
     <section id="visas" className={cn(className)}>
@@ -22,7 +24,7 @@ export function FeaturedVisas({ className }: FeaturedVisasProps) {
         />
 
         <div className="mt-10 grid gap-5 lg:grid-cols-2">
-          {programs.map((program) => {
+          {items.map((program) => {
             const country = getCountryBySlug(program.countrySlug);
             if (!country) {
               return null;

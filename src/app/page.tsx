@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import {
   Calculator,
@@ -28,7 +27,6 @@ import {
   getAllCountries,
   getAllVisaPrograms,
   getComparisonPageCount,
-  getFeaturedCountries,
   getVisasByCountry,
 } from "@/data";
 import {
@@ -38,16 +36,23 @@ import {
   buildOrganizationJsonLd,
   buildWebSiteJsonLd,
   createPageMetadata,
-  HOMEPAGE_DESCRIPTION,
-  HOMEPAGE_FAQS,
-  HOMEPAGE_TITLE,
 } from "@/lib/seo";
+import {
+  getResolvedSiteSettings,
+  resolveFeaturedCountries,
+  resolveFeaturedComparisonSlugs,
+  resolveFeaturedGuides,
+  resolveFeaturedVisas,
+} from "@/lib/site-settings";
 
-export const metadata: Metadata = createPageMetadata({
-  title: HOMEPAGE_TITLE,
-  description: HOMEPAGE_DESCRIPTION,
-  path: "/",
-});
+export async function generateMetadata() {
+  const settings = await getResolvedSiteSettings();
+  return createPageMetadata({
+    title: settings.homepageTitle,
+    description: settings.homepageDescription,
+    path: "/",
+  });
+}
 
 const tools = [
   {
@@ -83,14 +88,17 @@ const tools = [
 const SECTION_ALT = "border-t border-border/60 bg-neutral-bg/40 py-16 sm:py-24";
 const SECTION_BASE = "border-t border-border/60 py-16 sm:py-24";
 
-export default function Home() {
+export default async function Home() {
+  const settings = await getResolvedSiteSettings();
   const countries = getAllCountries();
   const visaPrograms = getAllVisaPrograms();
-  const featuredCountries = getFeaturedCountries();
+  const featuredCountries = resolveFeaturedCountries(settings);
+  const featuredVisas = resolveFeaturedVisas(settings);
+  const featuredGuides = resolveFeaturedGuides(settings);
+  const featuredComparisonSlugs = resolveFeaturedComparisonSlugs(settings);
   const comparePageCount = getComparisonPageCount();
 
-  const featuredVisaItems = visaPrograms
-    .filter((v) => v.featured)
+  const featuredVisaItems = featuredVisas
     .slice(0, 6)
     .map((v) => ({
       name: v.name,
@@ -103,7 +111,7 @@ export default function Home() {
         data={[
           buildWebSiteJsonLd(),
           buildOrganizationJsonLd(),
-          buildFaqPageJsonLd(HOMEPAGE_FAQS),
+          buildFaqPageJsonLd(settings.homepageFaqs),
           buildItemListJsonLd("Featured visa programs", featuredVisaItems),
         ]}
       />
@@ -115,6 +123,17 @@ export default function Home() {
           programCount={visaPrograms.length}
           comparePageCount={comparePageCount}
           toolCount={4}
+          eyebrow={settings.heroEyebrow}
+          title={settings.heroTitle}
+          subtitle={settings.heroSubtitle}
+          primaryCta={{
+            label: settings.primaryCtaLabel,
+            href: settings.primaryCtaHref,
+          }}
+          secondaryCta={{
+            label: settings.secondaryCtaLabel,
+            href: settings.secondaryCtaHref,
+          }}
         />
 
         <section className="border-b border-border/60 bg-neutral-bg/40 py-10 sm:py-12">
@@ -168,11 +187,12 @@ export default function Home() {
         {/* 2. Compare */}
         <FeaturedComparisons
           comparePageCount={comparePageCount}
+          pairSlugs={featuredComparisonSlugs}
           className={SECTION_ALT}
         />
 
         {/* 3. Visa programs */}
-        <FeaturedVisas className={SECTION_BASE} />
+        <FeaturedVisas className={SECTION_BASE} programs={featuredVisas} />
 
         {/* 4. How it works */}
         <HowNomadIndexWorks
@@ -181,7 +201,7 @@ export default function Home() {
         />
 
         {/* 5. Guides */}
-        <LatestGuides className={SECTION_BASE} />
+        <LatestGuides className={SECTION_BASE} guides={featuredGuides} />
 
         {/* 6. Tools */}
         <section id="tools" className={SECTION_ALT}>
@@ -221,7 +241,7 @@ export default function Home() {
             />
 
             <dl className="mt-10 space-y-8">
-              {HOMEPAGE_FAQS.map((faq) => (
+              {settings.homepageFaqs.map((faq) => (
                 <div
                   key={faq.question}
                   className="rounded-2xl border border-border/60 bg-background p-6 shadow-sm"
@@ -257,7 +277,19 @@ export default function Home() {
         </section>
 
         {/* 11. Start planning */}
-        <HomepageCta className={`${SECTION_BASE} border-t-0`} />
+        <HomepageCta
+          className={`${SECTION_BASE} border-t-0`}
+          title={settings.bottomCtaTitle}
+          description={settings.bottomCtaDescription}
+          primaryCta={{
+            label: settings.primaryCtaLabel,
+            href: settings.primaryCtaHref,
+          }}
+          secondaryCta={{
+            label: settings.secondaryCtaLabel,
+            href: settings.secondaryCtaHref,
+          }}
+        />
       </main>
 
       <SiteFooter />

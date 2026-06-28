@@ -322,7 +322,7 @@ export function buildOrganizationJsonLd() {
     url: siteUrl,
     logo: {
       "@type": "ImageObject",
-      url: absoluteUrl("/icon"),
+      url: absoluteUrl("/android-chrome-512x512.png"),
     },
     description:
       "Mobility intelligence for founders, freelancers and remote workers comparing visa and residency programs.",
@@ -400,25 +400,27 @@ export function buildFaqPageJsonLd(faqs: FaqItem[]) {
   };
 }
 
-export function buildArticleJsonLd(guide: {
+export function buildArticleJsonLd(article: {
   title: string;
   excerpt: string;
   slug: string;
   datePublished: string;
   dateModified: string;
+  pathPrefix?: string;
+  imageUrl?: string;
 }) {
-  const guidePath = `/guides/${guide.slug}`;
-  const imageUrl = absoluteUrl(getOgImagePath(guidePath));
+  const articlePath = `${article.pathPrefix ?? "/guides"}/${article.slug}`;
+  const imageUrl = article.imageUrl ?? absoluteUrl(getOgImagePath(articlePath));
 
   return {
     "@context": "https://schema.org",
     "@type": "Article",
-    headline: guide.title,
-    description: guide.excerpt,
-    datePublished: guide.datePublished,
-    dateModified: guide.dateModified,
+    headline: article.title,
+    description: article.excerpt,
+    datePublished: article.datePublished,
+    dateModified: article.dateModified,
     image: [imageUrl],
-    url: absoluteUrl(guidePath),
+    url: absoluteUrl(articlePath),
     author: {
       "@type": "Organization",
       name: SITE_NAME,
@@ -430,12 +432,12 @@ export function buildArticleJsonLd(guide: {
       url: getSiteUrl(),
       logo: {
         "@type": "ImageObject",
-        url: absoluteUrl("/icon"),
+        url: absoluteUrl("/android-chrome-512x512.png"),
       },
     },
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": absoluteUrl(guidePath),
+      "@id": absoluteUrl(articlePath),
     },
   };
 }

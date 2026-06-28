@@ -33,6 +33,13 @@ const requiredFiles = [
   "src/app/manifest.ts",
   "src/app/icon.tsx",
   "src/app/apple-icon.tsx",
+  "public/favicon.ico",
+  "public/favicon-16x16.png",
+  "public/favicon-32x32.png",
+  "public/apple-touch-icon.png",
+  "public/android-chrome-192x192.png",
+  "public/android-chrome-512x512.png",
+  "public/icon.svg",
   "src/app/not-found.tsx",
   "src/app/error.tsx",
   "src/app/global-error.tsx",
@@ -131,7 +138,14 @@ console.log(`\nNomadIndex launch validation (base: ${baseUrl})\n`);
 await fetchCheck("/robots.txt", "Live: robots.txt");
 const sitemapRes = await fetchCheck("/sitemap.xml", "Live: sitemap.xml");
 await fetchCheck("/manifest.webmanifest", "Live: manifest");
+await fetchCheck("/favicon.ico", "Live: favicon.ico");
+await fetchCheck("/favicon-16x16.png", "Live: favicon-16x16.png");
+await fetchCheck("/favicon-32x32.png", "Live: favicon-32x32.png");
+await fetchCheck("/apple-touch-icon.png", "Live: apple-touch-icon.png");
+await fetchCheck("/android-chrome-192x192.png", "Live: android-chrome-192x192.png");
+await fetchCheck("/android-chrome-512x512.png", "Live: android-chrome-512x512.png");
 await fetchCheck("/icon", "Live: favicon icon route");
+await fetchCheck("/apple-icon", "Live: apple-icon route");
 
 const redirectRes = await fetch(`${baseUrl.replace(/\/$/, "")}/visas/uk-self-sponsorship`, {
   redirect: "manual",
