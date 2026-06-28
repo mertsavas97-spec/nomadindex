@@ -18,12 +18,6 @@ export default function manifest(): MetadataRoute.Manifest {
     categories: ["travel", "business", "productivity"],
     icons: [
       {
-        src: "/favicon-32x32.png",
-        sizes: "32x32",
-        type: "image/png",
-        purpose: "any",
-      },
-      {
         src: "/android-chrome-192x192.png",
         sizes: "192x192",
         type: "image/png",

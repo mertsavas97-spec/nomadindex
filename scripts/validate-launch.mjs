@@ -33,6 +33,7 @@ const requiredFiles = [
   "src/app/manifest.ts",
   "src/app/icon.tsx",
   "src/app/apple-icon.tsx",
+  "src/app/favicon.ico",
   "public/favicon.ico",
   "public/favicon-16x16.png",
   "public/favicon-32x32.png",
@@ -40,6 +41,8 @@ const requiredFiles = [
   "public/android-chrome-192x192.png",
   "public/android-chrome-512x512.png",
   "public/icon.svg",
+  "public/ads.txt",
+  "src/components/ads/google-adsense.tsx",
   "src/app/not-found.tsx",
   "src/app/error.tsx",
   "src/app/global-error.tsx",
@@ -58,6 +61,8 @@ const forbiddenPaths = [
   "src/db",
   "drizzle.config.ts",
   "data/cms.db",
+  "public/next.svg",
+  "public/vercel.svg",
 ];
 
 for (const file of forbiddenPaths) {
@@ -82,6 +87,18 @@ for (const file of requiredFiles) {
     pass(`File: ${file}`, "Present");
   } else {
     fail(`File: ${file}`, "Missing");
+  }
+}
+
+const adsTxtPath = join(root, "public/ads.txt");
+if (existsSync(adsTxtPath)) {
+  const adsTxt = readFileSync(adsTxtPath, "utf8").trim();
+  const expectedAdsTxt =
+    "google.com, pub-4628962707131944, DIRECT, f08c47fec0942fa0";
+  if (adsTxt === expectedAdsTxt) {
+    pass("ads.txt content", "Publisher record matches AdSense account");
+  } else {
+    fail("ads.txt content", "Unexpected ads.txt content");
   }
 }
 
@@ -164,7 +181,7 @@ async function fetchCheck(path, label) {
 console.log(`\nNomadIndex launch validation (base: ${baseUrl})\n`);
 
 await fetchCheck("/robots.txt", "Live: robots.txt");
-const sitemapRes = await fetchCheck("/sitemap.xml", "Live: sitemap.xml");
+const adsTxtRes = await fetchCheck("/ads.txt", "Live: ads.txt");
 await fetchCheck("/manifest.webmanifest", "Live: manifest");
 await fetchCheck("/favicon.ico", "Live: favicon.ico");
 await fetchCheck("/favicon-16x16.png", "Live: favicon-16x16.png");
@@ -174,6 +191,20 @@ await fetchCheck("/android-chrome-192x192.png", "Live: android-chrome-192x192.pn
 await fetchCheck("/android-chrome-512x512.png", "Live: android-chrome-512x512.png");
 await fetchCheck("/icon", "Live: favicon icon route");
 await fetchCheck("/apple-icon", "Live: apple-icon route");
+
+if (adsTxtRes) {
+  const adsTxtBody = (await adsTxtRes.text()).trim();
+  if (
+    adsTxtBody ===
+    "google.com, pub-4628962707131944, DIRECT, f08c47fec0942fa0"
+  ) {
+    pass("Live: ads.txt content", "Publisher record matches AdSense account");
+  } else {
+    warn("Live: ads.txt content", "Unexpected body (deploy may be pending)");
+  }
+}
+
+const sitemapRes = await fetchCheck("/sitemap.xml", "Live: sitemap.xml");
 
 const redirectRes = await fetch(`${baseUrl.replace(/\/$/, "")}/visas/uk-self-sponsorship`, {
   redirect: "manual",

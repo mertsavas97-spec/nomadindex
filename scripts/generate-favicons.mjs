@@ -11,6 +11,7 @@ import toIco from "to-ico";
 const root = join(import.meta.dirname, "..");
 const svgPath = join(root, "assets/favicon-ni-monogram/icon.svg");
 const publicDir = join(root, "public");
+const appDir = join(root, "src/app");
 
 mkdirSync(publicDir, { recursive: true });
 
@@ -35,7 +36,8 @@ writeFileSync(join(publicDir, "android-chrome-512x512.png"), png512);
 
 const ico = await toIco([png16, png32, png48]);
 writeFileSync(join(publicDir, "favicon.ico"), ico);
+writeFileSync(join(appDir, "favicon.ico"), ico);
 
 copyFileSync(svgPath, join(publicDir, "icon.svg"));
 
-console.log("Generated favicon assets in public/");
+console.log("Generated favicon assets in public/ and src/app/favicon.ico");

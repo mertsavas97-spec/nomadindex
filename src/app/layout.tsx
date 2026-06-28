@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
+import { GoogleAdSense } from "@/components/ads/google-adsense";
 import { GoogleAnalytics } from "@/components/analytics/google-analytics";
 import { SiteAnalytics } from "@/components/analytics/site-analytics";
 import {
@@ -44,6 +45,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const defaultDescription = settings.defaultOgDescription || DEFAULT_SITE_DESCRIPTION;
   const siteName = settings.siteTitle || SITE_NAME;
   const ogTitle = settings.defaultOgTitle || homepageTitle;
+  const adsenseClient = process.env.NEXT_PUBLIC_ADSENSE_CLIENT?.trim();
 
   return {
     metadataBase: new URL(siteUrl),
@@ -71,6 +73,9 @@ export async function generateMetadata(): Promise<Metadata> {
     formatDetection: {
       telephone: false,
     },
+    ...(adsenseClient
+      ? { other: { "google-adsense-account": adsenseClient } }
+      : {}),
     verification: {
       google: settings.googleSearchConsole || undefined,
       other: settings.bingVerification
@@ -121,6 +126,7 @@ export default async function RootLayout({
         </a>
         {children}
         <GoogleAnalytics />
+        <GoogleAdSense />
         <SiteAnalytics />
         <Analytics />
         <SpeedInsights />
