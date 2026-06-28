@@ -1,3 +1,22 @@
 {
-  "posts": []
+  "posts": [
+    {
+      "id": "99b7f532-ca5b-428c-b69e-867db07c0e0a",
+      "title": "deneme",
+      "slug": "d",
+      "excerpt": "deneme",
+      "contentMarkdown": "deneme",
+      "category": "general",
+      "tags": "[]",
+      "status": "published",
+      "seoTitle": null,
+      "seoDescription": null,
+      "ogTitle": null,
+      "ogDescription": null,
+      "coverImage": null,
+      "publishedAt": "2026-06-28T20:56:58.804Z",
+      "updatedAt": "2026-06-28T20:56:58.804Z",
+      "createdAt": "2026-06-28T20:56:58.804Z"
+    }
+  ]
 }
