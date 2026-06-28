@@ -8,7 +8,7 @@ import {
   savePostAction,
   type PostActionState,
 } from "@/app/admin/(dashboard)/posts/actions";
-import type { Post } from "@/db/schema";
+import type { CmsPost } from "@/types/cms";
 import { slugifyTitle } from "@/lib/cms/validation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,11 +16,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { DeploymentStatusPanel } from "@/components/admin/deployment-status";
 import { MarkdownContent } from "@/components/blog/markdown-content";
 import { parsePostTags } from "@/lib/cms/post-utils";
 
 type PostEditorProps = {
-  post?: Post;
+  post?: CmsPost;
 };
 
 const initialState: PostActionState = {};
@@ -69,6 +70,15 @@ export function PostEditor({ post }: PostEditorProps) {
         <p className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
           {state.error}
         </p>
+      ) : null}
+
+      {state.deployTriggered ? (
+        <div className="space-y-4">
+          <p className="rounded-lg border border-primary/20 bg-primary-soft/40 px-4 py-3 text-sm text-navy">
+            Changes committed to GitHub. A Vercel deployment has been triggered.
+          </p>
+          <DeploymentStatusPanel initialDeployment={state.deployment ?? null} />
+        </div>
       ) : null}
 
       {state.warnings?.length ? (

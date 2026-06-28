@@ -1,46 +1,33 @@
-import { eq } from "drizzle-orm";
-
-import { getDb } from "@/db";
-import { settings } from "@/db/schema";
+import {
+  getPublicSettingsMap,
+  loadSettingsForAdmin,
+  saveSettingsDocument,
+} from "@/lib/cms/persist";
 
 export async function getAllSettingsMap(): Promise<Record<string, string>> {
-  try {
-    const rows = getDb().select().from(settings).all();
-    return Object.fromEntries(rows.map((row) => [row.key, row.value]));
-  } catch {
-    return {};
+  if (process.env.GITHUB_TOKEN && process.env.GITHUB_REPO) {
+    try {
+      return await loadSettingsForAdmin();
+    } catch {
+      // fall through
+    }
   }
+
+  return getPublicSettingsMap();
 }
 
 export async function getSetting(key: string, fallback = ""): Promise<string> {
-  try {
-    const row = getDb()
-      .select()
-      .from(settings)
-      .where(eq(settings.key, key))
-      .get();
-    return row?.value ?? fallback;
-  } catch {
-    return fallback;
-  }
-}
-
-export async function setSetting(key: string, value: string) {
-  const now = new Date().toISOString();
-  getDb()
-    .insert(settings)
-    .values({ key, value, updatedAt: now })
-    .onConflictDoUpdate({
-      target: settings.key,
-      set: { value, updatedAt: now },
-    })
-    .run();
+  const settings = await getAllSettingsMap();
+  return settings[key] ?? fallback;
 }
 
 export async function setSettings(entries: Record<string, string>) {
-  for (const [key, value] of Object.entries(entries)) {
-    await setSetting(key, value);
-  }
+  const current =
+    process.env.GITHUB_TOKEN && process.env.GITHUB_REPO
+      ? await loadSettingsForAdmin()
+      : getPublicSettingsMap();
+  const next = { ...current, ...entries };
+  return saveSettingsDocument(next, "cms: update settings");
 }
 
 export function parseJsonArray(value: string): string[] {
@@ -73,4 +60,8 @@ export function parseJsonFaqs(
   } catch {
     return [];
   }
+}
+
+export function getPublicSettings(): Record<string, string> {
+  return getPublicSettingsMap();
 }

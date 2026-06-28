@@ -5,10 +5,13 @@ import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth/session";
 import { setSettings } from "@/lib/cms/settings";
 import { SETTING_KEYS } from "@/lib/cms/settings-keys";
+import type { DeploymentStatus } from "@/types/cms";
 
 export type SettingsActionState = {
   success?: boolean;
   error?: string;
+  deployTriggered?: boolean;
+  deployment?: DeploymentStatus | null;
 };
 
 export async function saveSeoSettingsAction(
@@ -18,7 +21,7 @@ export async function saveSeoSettingsAction(
   await requireAdmin();
 
   try {
-    await setSettings({
+    const result = await setSettings({
       [SETTING_KEYS.siteTitle]: String(formData.get("siteTitle") ?? ""),
       [SETTING_KEYS.homepageTitle]: String(formData.get("homepageTitle") ?? ""),
       [SETTING_KEYS.homepageDescription]: String(
@@ -43,9 +46,18 @@ export async function saveSeoSettingsAction(
 
     revalidatePath("/admin/seo");
     revalidatePath("/");
-    return { success: true };
-  } catch {
-    return { error: "Failed to save SEO settings." };
+    return {
+      success: true,
+      deployTriggered: result.deployTriggered,
+      deployment: result.deployment,
+    };
+  } catch (error) {
+    return {
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to save SEO settings.",
+    };
   }
 }
 
@@ -56,7 +68,7 @@ export async function saveHomepageSettingsAction(
   await requireAdmin();
 
   try {
-    await setSettings({
+    const result = await setSettings({
       [SETTING_KEYS.heroEyebrow]: String(formData.get("heroEyebrow") ?? ""),
       [SETTING_KEYS.heroTitle]: String(formData.get("heroTitle") ?? ""),
       [SETTING_KEYS.heroSubtitle]: String(formData.get("heroSubtitle") ?? ""),
@@ -87,8 +99,17 @@ export async function saveHomepageSettingsAction(
 
     revalidatePath("/admin/homepage");
     revalidatePath("/");
-    return { success: true };
-  } catch {
-    return { error: "Failed to save homepage settings." };
+    return {
+      success: true,
+      deployTriggered: result.deployTriggered,
+      deployment: result.deployment,
+    };
+  } catch (error) {
+    return {
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to save homepage settings.",
+    };
   }
 }

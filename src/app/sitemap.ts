@@ -134,17 +134,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }));
 
-  let blogRoutes: MetadataRoute.Sitemap = [];
-  try {
-    blogRoutes = getPublishedPosts().map((post) => ({
-      url: absoluteUrl(`/blog/${post.slug}`),
-      lastModified: new Date(post.updatedAt),
-      changeFrequency: "weekly",
-      priority: 0.5,
-    }));
-  } catch {
-    blogRoutes = [];
-  }
+  const blogRoutes: MetadataRoute.Sitemap = getPublishedPosts().map((post) => ({
+    url: absoluteUrl(`/blog/${post.slug}`),
+    lastModified: new Date(post.updatedAt),
+    changeFrequency: "weekly",
+    priority: 0.5,
+  }));
 
   return [
     ...staticRoutes,

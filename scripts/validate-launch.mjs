@@ -47,7 +47,35 @@ const requiredFiles = [
   ".env.example",
   "vercel.json",
   "next.config.ts",
+  "content/cms/posts.json",
+  "content/cms/settings.json",
+  "src/lib/cms/persist.ts",
+  "src/lib/cms/github-client.ts",
+  "src/lib/cms/content-files.ts",
 ];
+
+const forbiddenPaths = [
+  "src/db",
+  "drizzle.config.ts",
+  "data/cms.db",
+];
+
+for (const file of forbiddenPaths) {
+  if (existsSync(join(root, file))) {
+    fail(`Forbidden: ${file}`, "Legacy SQLite/filesystem CMS artifact still present");
+  } else {
+    pass(`Forbidden absent: ${file}`, "Not present");
+  }
+}
+
+const pkg = JSON.parse(readFileSync(join(root, "package.json"), "utf8"));
+for (const dep of ["better-sqlite3", "drizzle-orm", "drizzle-kit"]) {
+  if (pkg.dependencies?.[dep] || pkg.devDependencies?.[dep]) {
+    fail(`Dependency: ${dep}`, "Legacy SQLite CMS dependency still installed");
+  } else {
+    pass(`Dependency absent: ${dep}`, "Not installed");
+  }
+}
 
 for (const file of requiredFiles) {
   if (existsSync(join(root, file))) {
@@ -57,11 +85,11 @@ for (const file of requiredFiles) {
   }
 }
 
-// --- Package checks ---
-const pkg = JSON.parse(readFileSync(join(root, "package.json"), "utf8"));
+// --- Package checks (runtime deps) ---
+const pkgRuntime = JSON.parse(readFileSync(join(root, "package.json"), "utf8"));
 for (const dep of ["@vercel/analytics", "@vercel/speed-insights"]) {
-  if (pkg.dependencies?.[dep]) {
-    pass(`Dependency: ${dep}`, pkg.dependencies[dep]);
+  if (pkgRuntime.dependencies?.[dep]) {
+    pass(`Dependency: ${dep}`, pkgRuntime.dependencies[dep]);
   } else {
     fail(`Dependency: ${dep}`, "Not installed");
   }

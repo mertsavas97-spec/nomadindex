@@ -5,10 +5,10 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import {
-  createPost,
-  deletePost,
-  isSlugTaken,
-  updatePost,
+  createPostForAdmin,
+  deletePostForAdmin,
+  isSlugTakenForAdmin,
+  updatePostForAdmin,
 } from "@/lib/cms/posts";
 import { parsePostTags, serializePostTags } from "@/lib/cms/post-utils";
 import {
@@ -17,11 +17,14 @@ import {
   slugifyTitle,
 } from "@/lib/cms/validation";
 import { requireAdmin } from "@/lib/auth/session";
+import type { DeploymentStatus } from "@/types/cms";
 
 export type PostActionState = {
   error?: string;
   warnings?: string[];
   id?: string;
+  deployTriggered?: boolean;
+  deployment?: DeploymentStatus | null;
 };
 
 function parseTagsInput(raw: string): string[] {
@@ -35,7 +38,7 @@ function parseTagsInput(raw: string): string[] {
     .filter(Boolean);
 }
 
-function buildPostPayload(formData: FormData, existingId?: string) {
+async function buildPostPayload(formData: FormData, existingId?: string) {
   const parsed = postFormSchema.safeParse({
     title: formData.get("title"),
     slug: formData.get("slug"),
@@ -67,7 +70,7 @@ function buildPostPayload(formData: FormData, existingId?: string) {
 
   const slug = values.slug.trim() || slugifyTitle(values.title);
 
-  if (isSlugTaken(slug, existingId)) {
+  if (await isSlugTakenForAdmin(slug, existingId)) {
     return { error: "Slug is already in use." };
   }
 
@@ -111,7 +114,10 @@ export async function savePostAction(
   await requireAdmin();
 
   const postId = formData.get("id");
-  const payload = buildPostPayload(formData, typeof postId === "string" ? postId : undefined);
+  const payload = await buildPostPayload(
+    formData,
+    typeof postId === "string" ? postId : undefined
+  );
 
   if ("error" in payload && payload.error) {
     return { error: payload.error };
@@ -123,28 +129,41 @@ export async function savePostAction(
 
   const now = new Date().toISOString();
 
-  if (typeof postId === "string" && postId) {
-    updatePost(postId, payload.values);
+  try {
+    if (typeof postId === "string" && postId) {
+      const result = await updatePostForAdmin(postId, payload.values);
+      revalidatePath("/admin/posts");
+      revalidatePath(`/admin/posts/${postId}`);
+      revalidatePath("/blog");
+      revalidatePath(`/blog/${payload.values.slug}`);
+      return {
+        id: postId,
+        warnings: payload.warnings,
+        deployTriggered: result.deployTriggered,
+        deployment: result.deployment,
+      };
+    }
+
+    const id = randomUUID();
+    await createPostForAdmin({
+      id,
+      ...payload.values,
+      createdAt: now,
+    });
+
     revalidatePath("/admin/posts");
-    revalidatePath(`/admin/posts/${postId}`);
     revalidatePath("/blog");
-    revalidatePath(`/blog/${payload.values.slug}`);
+    redirect(`/admin/posts/${id}?deploy=1`);
+  } catch (error) {
     return {
-      id: postId,
-      warnings: payload.warnings,
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to save post to GitHub.",
     };
   }
 
-  const id = randomUUID();
-  createPost({
-    id,
-    ...payload.values,
-    createdAt: now,
-  });
-
-  revalidatePath("/admin/posts");
-  revalidatePath("/blog");
-  redirect(`/admin/posts/${id}`);
+  return { error: "Unexpected save failure" };
 }
 
 export async function deletePostAction(formData: FormData) {
@@ -153,8 +172,13 @@ export async function deletePostAction(formData: FormData) {
   if (typeof id !== "string" || !id) {
     throw new Error("Missing post id");
   }
-  deletePost(id);
-  revalidatePath("/admin/posts");
-  revalidatePath("/blog");
-  redirect("/admin/posts");
+
+  try {
+    await deletePostForAdmin(id);
+    revalidatePath("/admin/posts");
+    revalidatePath("/blog");
+    redirect("/admin/posts");
+  } catch (error) {
+    throw error instanceof Error ? error : new Error("Failed to delete post");
+  }
 }

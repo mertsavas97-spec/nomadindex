@@ -1,5 +1,6 @@
 import {
   getAllSettingsMap,
+  getPublicSettings,
   parseJsonArray,
   parseJsonFaqs,
 } from "@/lib/cms/settings";
@@ -84,9 +85,9 @@ const DEFAULTS: ResolvedSiteSettings = {
     "Run the pathway matcher, compare your top two countries, then open program pages to verify requirements with official sources.",
 };
 
-export async function getResolvedSiteSettings(): Promise<ResolvedSiteSettings> {
-  const stored = await getAllSettingsMap();
-
+function resolveSiteSettingsFromMap(
+  stored: Record<string, string>
+): ResolvedSiteSettings {
   const featuredCountrySlugs = stored[SETTING_KEYS.featuredCountrySlugs]
     ? parseJsonArray(stored[SETTING_KEYS.featuredCountrySlugs])
     : DEFAULTS.featuredCountrySlugs;
@@ -158,6 +159,14 @@ export async function getResolvedSiteSettings(): Promise<ResolvedSiteSettings> {
     bottomCtaDescription:
       stored[SETTING_KEYS.bottomCtaDescription] || DEFAULTS.bottomCtaDescription,
   };
+}
+
+export async function getResolvedSiteSettings(): Promise<ResolvedSiteSettings> {
+  return resolveSiteSettingsFromMap(getPublicSettings());
+}
+
+export async function getResolvedSiteSettingsForAdmin(): Promise<ResolvedSiteSettings> {
+  return resolveSiteSettingsFromMap(await getAllSettingsMap());
 }
 
 export { DEFAULTS as SITE_SETTINGS_DEFAULTS };

@@ -2,7 +2,11 @@ import Link from "next/link";
 
 import { PostListFilters } from "@/components/admin/post-list-filters";
 import { createAdminMetadata } from "@/lib/admin/metadata";
-import { getAllPosts, getPostsByStatus, searchPosts } from "@/lib/cms/posts";
+import {
+  getAllPostsForAdmin,
+  getPostsByStatusForAdmin,
+  searchPostsForAdmin,
+} from "@/lib/cms/posts";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -27,10 +31,10 @@ type PageProps = {
 export default async function AdminPostsPage({ searchParams }: PageProps) {
   const { q, status } = await searchParams;
   const posts = q
-    ? searchPosts(q, status)
+    ? await searchPostsForAdmin(q, status)
     : status
-      ? getPostsByStatus(status)
-      : getAllPosts();
+      ? await getPostsByStatusForAdmin(status)
+      : await getAllPostsForAdmin();
 
   return (
     <div className="space-y-6">
@@ -38,7 +42,7 @@ export default async function AdminPostsPage({ searchParams }: PageProps) {
         <div>
           <h2 className="font-heading text-2xl font-semibold text-navy">Posts</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Manage CMS blog posts separately from structured /guides content.
+            Git-backed blog posts saved to `content/cms/posts.json`.
           </p>
         </div>
         <Button asChild>

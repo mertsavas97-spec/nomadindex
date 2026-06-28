@@ -1,108 +1,124 @@
-import "server-only";
+import type { CmsPost, NewCmsPost } from "@/types/cms";
+import {
+  getPublicPosts,
+  loadPostsForAdmin,
+  savePostsDocument,
+} from "@/lib/cms/persist";
 
-import { count, desc, eq, like, or } from "drizzle-orm";
+export type Post = CmsPost;
+export type NewPost = NewCmsPost;
 
-import { getDb } from "@/db";
-import { posts, type NewPost, type Post } from "@/db/schema";
-
-export function getAllPosts(): Post[] {
-  return getDb().select().from(posts).orderBy(desc(posts.updatedAt)).all();
+function sortByUpdatedDesc(posts: CmsPost[]) {
+  return [...posts].sort(
+    (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+  );
 }
 
-export function getPublishedPosts(): Post[] {
-  return getDb()
-    .select()
-    .from(posts)
-    .where(eq(posts.status, "published"))
-    .orderBy(desc(posts.publishedAt))
-    .all();
+function sortByPublishedDesc(posts: CmsPost[]) {
+  return [...posts].sort((a, b) => {
+    const aDate = a.publishedAt ?? a.createdAt;
+    const bDate = b.publishedAt ?? b.createdAt;
+    return new Date(bDate).getTime() - new Date(aDate).getTime();
+  });
 }
 
-export function getPostById(id: string): Post | undefined {
-  return getDb().select().from(posts).where(eq(posts.id, id)).get();
+export function getAllPosts(): CmsPost[] {
+  return sortByUpdatedDesc(getPublicPosts());
 }
 
-export function getPostBySlug(slug: string): Post | undefined {
-  return getDb().select().from(posts).where(eq(posts.slug, slug)).get();
+export function getPublishedPosts(): CmsPost[] {
+  return sortByPublishedDesc(
+    getPublicPosts().filter((post) => post.status === "published")
+  );
 }
 
-export function getPublishedPostBySlug(slug: string): Post | undefined {
-  const post = getDb().select().from(posts).where(eq(posts.slug, slug)).get();
+export function getPostBySlug(slug: string): CmsPost | undefined {
+  return getPublicPosts().find((post) => post.slug === slug);
+}
+
+export function getPublishedPostBySlug(slug: string): CmsPost | undefined {
+  const post = getPostBySlug(slug);
   if (!post || post.status !== "published") return undefined;
   return post;
 }
 
-export function searchPosts(query: string, status?: "draft" | "published"): Post[] {
-  const pattern = `%${query.trim()}%`;
-  const conditions = [
-    like(posts.title, pattern),
-    like(posts.slug, pattern),
-    like(posts.excerpt, pattern),
-  ];
-
-  if (status) {
-    return getDb()
-      .select()
-      .from(posts)
-      .where(or(...conditions))
-      .orderBy(desc(posts.updatedAt))
-      .all()
-      .filter((post) => post.status === status);
-  }
-
-  return getDb()
-    .select()
-    .from(posts)
-    .where(or(...conditions))
-    .orderBy(desc(posts.updatedAt))
-    .all();
-}
-
-export function getPostsByStatus(status: "draft" | "published"): Post[] {
-  return getDb()
-    .select()
-    .from(posts)
-    .where(eq(posts.status, status))
-    .orderBy(desc(posts.updatedAt))
-    .all();
-}
-
 export function countPostsByStatus(status: "draft" | "published"): number {
-  const row = getDb()
-    .select({ value: count() })
-    .from(posts)
-    .where(eq(posts.status, status))
-    .get();
-  return row?.value ?? 0;
+  return getPublicPosts().filter((post) => post.status === status).length;
 }
 
-export function isSlugTaken(slug: string, excludeId?: string): boolean {
-  const existing = getPostBySlug(slug);
+export async function getAllPostsForAdmin(): Promise<CmsPost[]> {
+  return sortByUpdatedDesc(await loadPostsForAdmin());
+}
+
+export async function getPostByIdForAdmin(id: string): Promise<CmsPost | undefined> {
+  return (await loadPostsForAdmin()).find((post) => post.id === id);
+}
+
+export async function searchPostsForAdmin(
+  query: string,
+  status?: "draft" | "published"
+): Promise<CmsPost[]> {
+  const pattern = query.trim().toLowerCase();
+  const posts = await getAllPostsForAdmin();
+
+  return posts.filter((post) => {
+    if (status && post.status !== status) return false;
+    if (!pattern) return true;
+
+    return (
+      post.title.toLowerCase().includes(pattern) ||
+      post.slug.toLowerCase().includes(pattern) ||
+      post.excerpt.toLowerCase().includes(pattern)
+    );
+  });
+}
+
+export async function getPostsByStatusForAdmin(
+  status: "draft" | "published"
+): Promise<CmsPost[]> {
+  return sortByUpdatedDesc(
+    (await loadPostsForAdmin()).filter((post) => post.status === status)
+  );
+}
+
+export async function isSlugTakenForAdmin(slug: string, excludeId?: string) {
+  const existing = (await loadPostsForAdmin()).find((post) => post.slug === slug);
   if (!existing) return false;
   if (excludeId && existing.id === excludeId) return false;
   return true;
 }
 
-export function createPost(data: NewPost): Post {
-  getDb().insert(posts).values(data).run();
-  const created = getPostById(data.id);
-  if (!created) {
-    throw new Error("Failed to create post");
-  }
-  return created;
+export async function persistPostsForAdmin(
+  posts: CmsPost[],
+  message: string
+) {
+  return savePostsDocument(posts, message);
 }
 
-export function updatePost(id: string, data: Partial<NewPost>): Post {
-  getDb().update(posts).set(data).where(eq(posts.id, id)).run();
-  const updated = getPostById(id);
-  if (!updated) {
+export async function createPostForAdmin(data: CmsPost) {
+  const posts = await loadPostsForAdmin();
+  posts.push(data);
+  return persistPostsForAdmin(posts, `cms: create post ${data.slug}`);
+}
+
+export async function updatePostForAdmin(id: string, data: Partial<CmsPost>) {
+  const posts = await loadPostsForAdmin();
+  const index = posts.findIndex((post) => post.id === id);
+  if (index === -1) {
     throw new Error("Post not found");
   }
-  return updated;
+
+  posts[index] = { ...posts[index], ...data };
+  return persistPostsForAdmin(posts, `cms: update post ${posts[index].slug}`);
 }
 
-export function deletePost(id: string) {
-  getDb().delete(posts).where(eq(posts.id, id)).run();
-}
+export async function deletePostForAdmin(id: string) {
+  const posts = await loadPostsForAdmin();
+  const post = posts.find((entry) => entry.id === id);
+  if (!post) {
+    throw new Error("Post not found");
+  }
 
-import { parsePostTags, serializePostTags } from "@/lib/cms/post-utils";
+  const nextPosts = posts.filter((entry) => entry.id !== id);
+  return persistPostsForAdmin(nextPosts, `cms: delete post ${post.slug}`);
+}

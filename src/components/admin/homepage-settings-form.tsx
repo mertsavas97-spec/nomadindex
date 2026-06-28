@@ -7,6 +7,7 @@ import {
   type SettingsActionState,
 } from "@/app/admin/(dashboard)/settings-actions";
 import type { ResolvedSiteSettings } from "@/lib/site-settings";
+import { DeploymentStatusPanel } from "@/components/admin/deployment-status";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,9 +28,15 @@ export function HomepageSettingsForm({ settings }: HomepageSettingsFormProps) {
   return (
     <form action={formAction} className="space-y-6">
       {state.success ? (
-        <p className="rounded-lg border border-primary/20 bg-primary-soft/40 px-4 py-3 text-sm text-navy">
-          Homepage settings saved.
-        </p>
+        <div className="space-y-4">
+          <p className="rounded-lg border border-primary/20 bg-primary-soft/40 px-4 py-3 text-sm text-navy">
+            Homepage settings saved to GitHub
+            {state.deployTriggered ? " and a Vercel deployment was triggered." : "."}
+          </p>
+          {state.deployTriggered ? (
+            <DeploymentStatusPanel initialDeployment={state.deployment ?? null} />
+          ) : null}
+        </div>
       ) : null}
       {state.error ? (
         <p className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">

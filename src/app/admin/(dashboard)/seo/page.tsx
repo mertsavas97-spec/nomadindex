@@ -1,12 +1,12 @@
 import { createAdminMetadata } from "@/lib/admin/metadata";
 import { SeoSettingsForm } from "@/components/admin/seo-settings-form";
-import { getResolvedSiteSettings } from "@/lib/site-settings";
+import { getResolvedSiteSettingsForAdmin } from "@/lib/site-settings";
 
 export const metadata = createAdminMetadata("SEO");
 export const dynamic = "force-dynamic";
 
 export default async function AdminSeoPage() {
-  const settings = await getResolvedSiteSettings();
+  const settings = await getResolvedSiteSettingsForAdmin();
 
   return (
     <div className="space-y-6">

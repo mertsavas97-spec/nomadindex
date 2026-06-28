@@ -41,6 +41,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# cms
-/data/cms.db
-/data/*.db
+# legacy local SQLite CMS (removed — do not commit)
+/data/
+*.db
