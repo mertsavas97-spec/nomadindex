@@ -34,7 +34,7 @@ export function CmsSetupNotice() {
           </li>
         </ul>
         <p>
-          Content files: <code>content/cms/posts.json</code>,{" "}
+          Content files: <code>content/cms/guides.json</code>,{" "}
           <code>content/cms/settings.json</code>
         </p>
       </CardContent>

@@ -5,9 +5,12 @@ import type { LucideIcon } from "lucide-react";
 import { DeploymentStatusPanel } from "@/components/admin/deployment-status";
 import { createAdminMetadata } from "@/lib/admin/metadata";
 import { getLatestDeploymentStatus } from "@/lib/cms/deploy-client";
+import {
+  countGuidesByStatus,
+  getLastGuideUpdateForAdmin,
+} from "@/lib/cms/guides";
 import { isGitHubCmsConfigured } from "@/lib/cms/persist";
-import { countPostsByStatus } from "@/lib/cms/posts";
-import { getAllCountries, getAllGuides, getAllVisaPrograms } from "@/data";
+import { getAllCountries, getAllVisaPrograms } from "@/data";
 import { absoluteUrl } from "@/lib/seo";
 import { getSiteUrl } from "@/lib/site-url";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -53,9 +56,10 @@ function StatCard({
 }
 
 export default async function AdminDashboardPage() {
-  const publishedPosts = countPostsByStatus("published");
-  const draftPosts = countPostsByStatus("draft");
-  const guideCount = getAllGuides().length;
+  const publishedGuides = countGuidesByStatus("published");
+  const draftGuides = countGuidesByStatus("draft");
+  const totalGuides = publishedGuides + draftGuides;
+  const lastGuideUpdate = await getLastGuideUpdateForAdmin();
   const countryCount = getAllCountries().length;
   const visaCount = getAllVisaPrograms().length;
   const siteUrl = getSiteUrl();
@@ -66,7 +70,7 @@ export default async function AdminDashboardPage() {
       <div>
         <h2 className="font-heading text-2xl font-semibold text-navy">Dashboard</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Git-first CMS overview. Saves commit JSON to GitHub and trigger Vercel rebuilds.
+          Git-first CMS overview. Guide saves commit JSON to GitHub and trigger Vercel rebuilds.
         </p>
       </div>
 
@@ -84,9 +88,29 @@ export default async function AdminDashboardPage() {
       </Card>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard title="Published posts" value={publishedPosts} href="/admin/posts" icon={FileText} />
-        <StatCard title="Draft posts" value={draftPosts} href="/admin/posts" icon={FileText} />
-        <StatCard title="Total guides" value={guideCount} icon={Globe2} />
+        <StatCard
+          title="Published guides"
+          value={publishedGuides}
+          href="/admin/guides?status=published"
+          icon={FileText}
+        />
+        <StatCard
+          title="Draft guides"
+          value={draftGuides}
+          href="/admin/guides?status=draft"
+          icon={FileText}
+        />
+        <StatCard title="Total guide articles" value={totalGuides} icon={Globe2} />
+        <StatCard
+          title="Last guide update"
+          value={
+            lastGuideUpdate
+              ? new Date(lastGuideUpdate).toLocaleDateString()
+              : "—"
+          }
+          href="/admin/guides"
+          icon={Globe2}
+        />
         <StatCard title="Total countries" value={countryCount} icon={MapPin} />
         <StatCard title="Total visa programs" value={visaCount} icon={Plane} />
       </div>
@@ -140,8 +164,8 @@ export default async function AdminDashboardPage() {
           <CardTitle className="text-base text-navy">Quick links</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 text-sm">
-          <Link href="/admin/posts/new" className="block text-primary-dark hover:underline">
-            Create new blog post
+          <Link href="/admin/guides/new" className="block text-primary-dark hover:underline">
+            Create new guide
           </Link>
           <Link href="/admin/seo" className="block text-primary-dark hover:underline">
             Edit SEO settings
@@ -152,8 +176,8 @@ export default async function AdminDashboardPage() {
           <Link href="/admin/analytics" className="block text-primary-dark hover:underline">
             View analytics
           </Link>
-          <Link href="/blog" className="block text-primary-dark hover:underline">
-            View public blog
+          <Link href="/guides" className="block text-primary-dark hover:underline">
+            View public guides
           </Link>
         </CardContent>
       </Card>

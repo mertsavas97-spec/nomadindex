@@ -68,7 +68,7 @@ export default function AdminSettingsPage() {
           <CardTitle className="text-base text-navy">Content files</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 text-sm text-muted-foreground">
-          <p>`content/cms/posts.json`</p>
+          <p>`content/cms/guides.json`</p>
           <p>`content/cms/settings.json`</p>
         </CardContent>
       </Card>
@@ -79,7 +79,7 @@ export default function AdminSettingsPage() {
         </CardHeader>
         <CardContent className="space-y-3 text-sm text-muted-foreground">
           <p>
-            Download a JSON export of CMS posts and settings from the current GitHub or bundled
+            Download a JSON export of CMS guides and settings from the current GitHub or bundled
             source.
           </p>
           <Button asChild variant="outline">

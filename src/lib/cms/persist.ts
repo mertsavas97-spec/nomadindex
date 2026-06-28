@@ -1,6 +1,6 @@
 import {
-  getBundledPosts,
-  getBundledPostsDocument,
+  getBundledCmsGuides,
+  getBundledGuidesDocument,
   getBundledSettingsDocument,
   getBundledSettingsMap,
 } from "@/lib/cms/content-files";
@@ -11,22 +11,22 @@ import {
 } from "@/lib/cms/cms-config";
 import { commitCmsFiles, readGitHubFile } from "@/lib/cms/github-client";
 import { publishCmsChanges } from "@/lib/cms/deploy-client";
-import type { CmsPost, PostsDocument, SettingsDocument } from "@/types/cms";
+import type { CmsGuide, GuidesDocument, SettingsDocument } from "@/types/cms";
 import { CMS_CONTENT_PATHS } from "@/types/cms";
 
-async function readPostsDocument(): Promise<PostsDocument> {
+async function readGuidesDocument(): Promise<GuidesDocument> {
   if (isGitHubCmsConfigured()) {
     try {
-      const file = await readGitHubFile(CMS_CONTENT_PATHS.posts);
+      const file = await readGitHubFile(CMS_CONTENT_PATHS.guides);
       if (file) {
-        return JSON.parse(file.content) as PostsDocument;
+        return JSON.parse(file.content) as GuidesDocument;
       }
     } catch {
       // fall through to bundled content
     }
   }
 
-  return getBundledPostsDocument();
+  return getBundledGuidesDocument();
 }
 
 async function readSettingsDocument(): Promise<SettingsDocument> {
@@ -44,16 +44,16 @@ async function readSettingsDocument(): Promise<SettingsDocument> {
   return getBundledSettingsDocument();
 }
 
-export async function loadPostsForAdmin(): Promise<CmsPost[]> {
-  const document = await readPostsDocument();
-  return document.posts;
+export async function loadGuidesForAdmin(): Promise<CmsGuide[]> {
+  const document = await readGuidesDocument();
+  return document.guides;
 }
 
-export async function savePostsDocument(posts: CmsPost[], message: string) {
+export async function saveGuidesDocument(guides: CmsGuide[], message: string) {
   assertGitHubCmsConfigured();
 
-  const content = `${JSON.stringify({ posts }, null, 2)}\n`;
-  await commitCmsFiles([{ path: CMS_CONTENT_PATHS.posts, content }], message);
+  const content = `${JSON.stringify({ guides }, null, 2)}\n`;
+  await commitCmsFiles([{ path: CMS_CONTENT_PATHS.guides, content }], message);
   return publishCmsChanges(message);
 }
 
@@ -81,8 +81,8 @@ export async function saveSettingsDocument(
   return publishCmsChanges(message);
 }
 
-export function getPublicPosts(): CmsPost[] {
-  return getBundledPosts();
+export function getPublicCmsGuides(): CmsGuide[] {
+  return getBundledCmsGuides();
 }
 
 export function getPublicSettingsMap(): Record<string, string> {

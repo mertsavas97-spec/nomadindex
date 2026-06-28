@@ -1,18 +1,18 @@
-import postsDocument from "../../../content/cms/posts.json";
+import guidesDocument from "../../../content/cms/guides.json";
 import settingsDocument from "../../../content/cms/settings.json";
 
-import type { CmsPost, PostsDocument, SettingsDocument } from "@/types/cms";
+import type { CmsGuide, GuidesDocument, SettingsDocument } from "@/types/cms";
 
-export function getBundledPostsDocument(): PostsDocument {
-  return postsDocument as PostsDocument;
+export function getBundledGuidesDocument(): GuidesDocument {
+  return guidesDocument as GuidesDocument;
 }
 
 export function getBundledSettingsDocument(): SettingsDocument {
   return settingsDocument as SettingsDocument;
 }
 
-export function getBundledPosts(): CmsPost[] {
-  return getBundledPostsDocument().posts;
+export function getBundledCmsGuides(): CmsGuide[] {
+  return getBundledGuidesDocument().guides;
 }
 
 export function getBundledSettingsMap(): Record<string, string> {

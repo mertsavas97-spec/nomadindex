@@ -34,14 +34,13 @@ export async function GET(request: Request) {
       deployment,
     });
   } catch (error) {
-    return NextResponse.json(
-      {
-        error:
-          error instanceof Error
-            ? error.message
-            : "Failed to fetch deployment status",
-      },
-      { status: 500 }
-    );
+    return NextResponse.json({
+      configured: true,
+      deployment: null,
+      warning:
+        error instanceof Error
+          ? error.message
+          : "Failed to fetch deployment status",
+    });
   }
 }

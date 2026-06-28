@@ -11,12 +11,14 @@ import { GuideRelatedLinks } from "@/components/guides/guide-related-links";
 import { GuideSectionBlock } from "@/components/guides/guide-section";
 import { GuideSummaryBox } from "@/components/guides/guide-summary-box";
 import { GuideToc } from "@/components/guides/guide-toc";
+import { MarkdownContent } from "@/components/markdown-content";
 import { JsonLd } from "@/components/seo/json-ld";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { VerificationBadge } from "@/components/verification-badge";
 import { Badge } from "@/components/ui/badge";
 import { getAllGuides, getGuideBySlug, getRelatedGuides } from "@/data";
+import { estimateReadingTimeFromMarkdown } from "@/lib/cms/validation";
 import {
   generateEnhancedGuideContent,
   estimateGuideReadingTime,
@@ -25,6 +27,7 @@ import {
   GUIDE_AUDIENCE_LABELS,
   GUIDE_CATEGORY_LABELS,
 } from "@/lib/guide-types";
+import { getPublishedGuideBySlug } from "@/lib/guides/resolve";
 import {
   buildArticleJsonLd,
   buildBreadcrumbJsonLd,
@@ -50,15 +53,24 @@ export const dynamicParams = false;
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const guide = getGuideBySlug(slug);
+  const guide = getPublishedGuideBySlug(slug);
 
   if (!guide) {
     return createNotFoundMetadata("Guide not found");
   }
 
+  const title =
+    guide.seoTitle?.trim() ||
+    guide.ogTitle?.trim() ||
+    GUIDE_METADATA_TITLE(guide.title);
+  const description =
+    guide.seoDescription?.trim() ||
+    guide.ogDescription?.trim() ||
+    GUIDE_METADATA_DESCRIPTION(guide.excerpt);
+
   return createPageMetadata({
-    title: GUIDE_METADATA_TITLE(guide.title),
-    description: GUIDE_METADATA_DESCRIPTION(guide.excerpt),
+    title,
+    description,
     path: `/guides/${guide.slug}`,
     openGraphType: "article",
   });
@@ -80,8 +92,13 @@ export default async function GuideDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  const enhanced = generateEnhancedGuideContent(guide);
-  const readingTime = estimateGuideReadingTime(enhanced.wordCount);
+  const publicGuide = getPublishedGuideBySlug(slug)!;
+  const markdownBody = publicGuide.markdownBody?.trim() ?? "";
+  const useMarkdown = markdownBody.length > 0;
+  const enhanced = useMarkdown ? null : generateEnhancedGuideContent(guide);
+  const readingTime = useMarkdown
+    ? publicGuide.readingTime || estimateReadingTimeFromMarkdown(markdownBody)
+    : estimateGuideReadingTime(enhanced!.wordCount);
 
   const relatedGuidesList = getRelatedGuides(slug, 4);
 
@@ -159,13 +176,16 @@ export default async function GuideDetailPage({ params }: PageProps) {
         </section>
 
         <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
-          <div className="grid gap-10 lg:grid-cols-[240px_1fr]">
-            <aside className="hidden lg:block">
-              <GuideToc
-                sections={enhanced.sections}
-                className="sticky top-24"
-              />
-            </aside>
+          <div
+            className={
+              useMarkdown ? "max-w-3xl" : "grid gap-10 lg:grid-cols-[240px_1fr]"
+            }
+          >
+            {!useMarkdown && enhanced ? (
+              <aside className="hidden lg:block">
+                <GuideToc sections={enhanced.sections} className="sticky top-24" />
+              </aside>
+            ) : null}
 
             <article className="min-w-0 space-y-10">
               <GuideEditorialByline dateModified={guide.dateModified} />
@@ -176,13 +196,19 @@ export default async function GuideDetailPage({ params }: PageProps) {
 
               <GuideKeyTakeaways takeaways={guide.keyTakeaways} />
 
-              <div className="lg:hidden">
-                <GuideToc sections={enhanced.sections} />
-              </div>
+              {!useMarkdown && enhanced ? (
+                <div className="lg:hidden">
+                  <GuideToc sections={enhanced.sections} />
+                </div>
+              ) : null}
 
-              {enhanced.sections.map((section) => (
-                <GuideSectionBlock key={section.id} section={section} />
-              ))}
+              {useMarkdown ? (
+                <MarkdownContent content={markdownBody} />
+              ) : (
+                enhanced?.sections.map((section) => (
+                  <GuideSectionBlock key={section.id} section={section} />
+                ))
+              )}
 
               <section id="faq" className="scroll-mt-24">
                 <h2 className="font-heading text-xl font-semibold text-navy sm:text-2xl">

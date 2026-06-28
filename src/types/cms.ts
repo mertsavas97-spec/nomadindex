@@ -1,32 +1,53 @@
-export type PostStatus = "draft" | "published";
+import type {
+  GuideAudience,
+  GuideCategory,
+  GuideFaq,
+  GuideSection,
+} from "@/types/guides";
+import type { VerificationStatus } from "@/types/nomadindex";
 
-export type CmsPost = {
+export type GuideStatus = "draft" | "published";
+
+export type CmsGuide = {
   id: string;
   title: string;
   slug: string;
   excerpt: string;
-  contentMarkdown: string;
-  category: string;
-  tags: string;
-  status: PostStatus;
+  summaryBox: string;
+  keyTakeaways: string[];
+  category: GuideCategory;
+  targetAudience: GuideAudience;
+  status: GuideStatus;
+  readingTime: number;
   seoTitle: string | null;
   seoDescription: string | null;
   ogTitle: string | null;
   ogDescription: string | null;
   coverImage: string | null;
+  relatedCountrySlugs: string[];
+  relatedVisaSlugs: string[];
+  relatedCompareSlugs: string[];
+  markdownBody: string | null;
+  sections: GuideSection[];
+  faqs: GuideFaq[];
+  datePublished: string;
+  dateModified: string;
+  lastUpdated: string;
+  lastReviewed: string | null;
+  verificationStatus: VerificationStatus;
   publishedAt: string | null;
   updatedAt: string;
   createdAt: string;
 };
 
-export type NewCmsPost = Omit<CmsPost, "id" | "createdAt" | "updatedAt"> & {
+export type NewCmsGuide = Omit<CmsGuide, "id" | "createdAt" | "updatedAt"> & {
   id?: string;
   createdAt?: string;
   updatedAt?: string;
 };
 
-export type PostsDocument = {
-  posts: CmsPost[];
+export type GuidesDocument = {
+  guides: CmsGuide[];
 };
 
 export type SettingsDocument = {
@@ -51,7 +72,14 @@ export type DeploymentStatus = {
   commitMessage: string | null;
 };
 
+export type PublishCmsResult = {
+  commitMessage: string;
+  deployTriggered: boolean;
+  deployment: DeploymentStatus | null;
+  deploymentStatusWarning?: string;
+};
+
 export const CMS_CONTENT_PATHS = {
-  posts: "content/cms/posts.json",
+  guides: "content/cms/guides.json",
   settings: "content/cms/settings.json",
 } as const;

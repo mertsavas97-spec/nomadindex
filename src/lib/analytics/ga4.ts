@@ -1,5 +1,7 @@
 import { BetaAnalyticsDataClient } from "@google-analytics/data";
 
+import { isGaDataApiConfigured } from "@/lib/analytics/admin-config";
+
 export type AnalyticsRange = "7d" | "30d";
 
 export type AnalyticsSummary = {
@@ -13,11 +15,7 @@ export type AnalyticsSummary = {
 };
 
 export function isGaConfigured(): boolean {
-  return Boolean(
-    process.env.GA_PROPERTY_ID &&
-      process.env.GOOGLE_CLIENT_EMAIL &&
-      process.env.GOOGLE_PRIVATE_KEY
-  );
+  return isGaDataApiConfigured();
 }
 
 function getDateRange(range: AnalyticsRange) {

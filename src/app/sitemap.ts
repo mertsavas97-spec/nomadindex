@@ -4,7 +4,6 @@ import { getAllCountryPairs } from "@/data/comparisons";
 import { getAllCountries } from "@/data/countries";
 import { getAllGuides } from "@/data/guides";
 import { getAllVisaPrograms } from "@/data/visa-programs";
-import { getPublishedPosts } from "@/lib/cms/posts";
 import { absoluteUrl } from "@/lib/seo";
 import { TOOL_LINKS } from "@/lib/tools";
 
@@ -41,12 +40,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: absoluteUrl("/guides"),
       lastModified: now,
       changeFrequency: "monthly",
-      priority: 0.6,
-    },
-    {
-      url: absoluteUrl("/blog"),
-      lastModified: now,
-      changeFrequency: "weekly",
       priority: 0.6,
     },
     {
@@ -134,13 +127,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }));
 
-  const blogRoutes: MetadataRoute.Sitemap = getPublishedPosts().map((post) => ({
-    url: absoluteUrl(`/blog/${post.slug}`),
-    lastModified: new Date(post.updatedAt),
-    changeFrequency: "weekly",
-    priority: 0.5,
-  }));
-
   return [
     ...staticRoutes,
     ...countryRoutes,
@@ -148,6 +134,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...compareRoutes,
     ...toolRoutes,
     ...guideRoutes,
-    ...blogRoutes,
   ];
 }

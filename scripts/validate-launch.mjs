@@ -47,7 +47,7 @@ const requiredFiles = [
   ".env.example",
   "vercel.json",
   "next.config.ts",
-  "content/cms/posts.json",
+  "content/cms/guides.json",
   "content/cms/settings.json",
   "src/lib/cms/persist.ts",
   "src/lib/cms/github-client.ts",
@@ -107,8 +107,8 @@ if (nextConfig.includes("uk-self-sponsorship")) {
 try {
   const countries = (readFileSync(join(root, "src/data/countries.ts"), "utf8").match(/slug: "/g) ?? []).length;
   const visas = (readFileSync(join(root, "src/data/visa-programs.ts"), "utf8").match(/slug: "/g) ?? []).length;
-  const guides = (readFileSync(join(root, "src/data/guides.ts"), "utf8").match(/slug: "/g) ?? []).length;
-  const staticPages = 12;
+  const guides = (readFileSync(join(root, "src/data/guide-records.ts"), "utf8").match(/slug: "/g) ?? []).length;
+  const staticPages = 11;
   const tools = 4;
   const comparePairs = (countries * (countries - 1)) / 2;
   const expectedSitemap = staticPages + countries + visas + comparePairs + tools + guides;

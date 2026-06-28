@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 type DeploymentStatusPanelProps = {
   initialDeployment?: DeploymentStatus | null;
   poll?: boolean;
+  statusWarning?: string;
 };
 
 function stateVariant(state: DeploymentStatus["state"]) {
@@ -29,11 +30,12 @@ function stateVariant(state: DeploymentStatus["state"]) {
 export function DeploymentStatusPanel({
   initialDeployment = null,
   poll = true,
+  statusWarning,
 }: DeploymentStatusPanelProps) {
   const [deployment, setDeployment] = useState<DeploymentStatus | null>(
     initialDeployment
   );
-  const [error, setError] = useState<string | null>(null);
+  const [pollWarning, setPollWarning] = useState<string | null>(null);
 
   useEffect(() => {
     if (!poll) return;
@@ -52,14 +54,15 @@ export function DeploymentStatusPanel({
         const payload = (await response.json()) as {
           deployment: DeploymentStatus | null;
           configured: boolean;
+          warning?: string;
         };
         if (!cancelled) {
           setDeployment(payload.deployment);
-          setError(null);
+          setPollWarning(payload.warning ?? null);
         }
       } catch (fetchError) {
         if (!cancelled) {
-          setError(
+          setPollWarning(
             fetchError instanceof Error
               ? fetchError.message
               : "Unable to load deployment status"
@@ -76,6 +79,8 @@ export function DeploymentStatusPanel({
     };
   }, [poll]);
 
+  const warning = statusWarning ?? pollWarning;
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0">
@@ -85,7 +90,11 @@ export function DeploymentStatusPanel({
         ) : null}
       </CardHeader>
       <CardContent className="space-y-3 text-sm">
-        {error ? <p className="text-destructive">{error}</p> : null}
+        {warning ? (
+          <p className="rounded-lg border border-warning-text/20 bg-warning-bg/40 px-3 py-2 text-warning-text">
+            Deployment was triggered, but live status could not be loaded: {warning}
+          </p>
+        ) : null}
         {!deployment ? (
           <p className="text-muted-foreground">
             Configure `VERCEL_API_TOKEN` and `VERCEL_PROJECT_ID` to track deployment

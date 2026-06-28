@@ -1,9 +1,5 @@
-import { createAdminMetadata } from "@/lib/admin/metadata";
-import { PostEditor } from "@/components/admin/post-editor";
+import { redirect } from "next/navigation";
 
-export const metadata = createAdminMetadata("New post");
-export const dynamic = "force-dynamic";
-
-export default function AdminNewPostPage() {
-  return <PostEditor />;
+export default function AdminNewPostRedirectPage() {
+  redirect("/admin/guides/new");
 }

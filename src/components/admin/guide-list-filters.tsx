@@ -5,15 +5,15 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-type PostListFiltersProps = {
+type GuideListFiltersProps = {
   initialQuery: string;
   initialStatus?: "draft" | "published";
 };
 
-export function PostListFilters({
+export function GuideListFilters({
   initialQuery,
   initialStatus,
-}: PostListFiltersProps) {
+}: GuideListFiltersProps) {
   const router = useRouter();
 
   return (
@@ -27,13 +27,13 @@ export function PostListFilters({
         const params = new URLSearchParams();
         if (q) params.set("q", q);
         if (status) params.set("status", status);
-        router.push(`/admin/posts${params.toString() ? `?${params.toString()}` : ""}`);
+        router.push(`/admin/guides${params.toString() ? `?${params.toString()}` : ""}`);
       }}
     >
       <Input
         name="q"
         defaultValue={initialQuery}
-        placeholder="Search posts..."
+        placeholder="Search guides..."
         className="max-w-sm"
       />
       <select

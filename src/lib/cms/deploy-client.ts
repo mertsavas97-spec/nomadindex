@@ -131,11 +131,24 @@ export async function getDeploymentStatusById(
 
 export async function publishCmsChanges(message: string) {
   const deploy = await triggerDeployHook();
-  const deployment = deploy.triggered ? await getLatestDeploymentStatus() : null;
+  let deployment: DeploymentStatus | null = null;
+  let deploymentStatusWarning: string | undefined;
+
+  if (deploy.triggered) {
+    try {
+      deployment = await getLatestDeploymentStatus();
+    } catch (error) {
+      deploymentStatusWarning =
+        error instanceof Error
+          ? error.message
+          : "Unable to fetch deployment status";
+    }
+  }
 
   return {
     commitMessage: message,
     deployTriggered: deploy.triggered,
     deployment,
+    deploymentStatusWarning,
   };
 }
