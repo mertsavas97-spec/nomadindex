@@ -166,6 +166,56 @@ export function getAllCountryPairs(): CountryPair[] {
   return pairs;
 }
 
+export function resolveComparisonPairRoute(pairSlug: string): {
+  countryASlug: string;
+  countryBSlug: string;
+  canonicalSlug: string;
+  shouldRedirect: boolean;
+} | null {
+  const parsed = parseComparisonPairSlug(pairSlug);
+  if (parsed) {
+    return {
+      ...parsed,
+      canonicalSlug: pairSlug,
+      shouldRedirect: false,
+    };
+  }
+
+  const match = pairSlug.match(/^(.+)-vs-(.+)$/);
+  if (!match) {
+    return null;
+  }
+
+  const [, slugA, slugB] = match;
+  const canonical = getComparisonPairSlug(slugA, slugB);
+  const canonicalParsed = parseComparisonPairSlug(canonical);
+  if (!canonicalParsed) {
+    return null;
+  }
+
+  return {
+    ...canonicalParsed,
+    canonicalSlug: canonical,
+    shouldRedirect: canonical !== pairSlug,
+  };
+}
+
+export function getAdjacentComparisonPairs(currentSlug: string): {
+  previous: CountryPair | null;
+  next: CountryPair | null;
+} {
+  const pairs = getAllCountryPairs();
+  const index = pairs.findIndex((pair) => pair.slug === currentSlug);
+  if (index === -1) {
+    return { previous: null, next: null };
+  }
+
+  return {
+    previous: index > 0 ? pairs[index - 1] : null,
+    next: index < pairs.length - 1 ? pairs[index + 1] : null,
+  };
+}
+
 function getImmigrationVisas(countrySlug: string) {
   return filterImmigrationPrograms(getVisasByCountry(countrySlug));
 }

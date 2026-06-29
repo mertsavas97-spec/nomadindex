@@ -4,6 +4,7 @@ import { Calculator, MapPin, Scale, Sparkles } from "lucide-react";
 
 import { DataVerificationNotice } from "@/components/data-verification-notice";
 import { DirectoryHero, PageContainer } from "@/components/layout/page-container";
+import { HubCrossLinks } from "@/components/seo/hub-cross-links";
 import { JsonLd } from "@/components/seo/json-ld";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -120,9 +121,7 @@ export default function ToolsPage() {
         <PageContainer className="section-padding">
           <DataVerificationNotice variant="tool" className="mb-4" />
           <DataTrustFooter className="mt-4" />
-          <Link href="/countries" className="link-action mt-6">
-            Browse countries →
-          </Link>
+          <HubCrossLinks excludeHref="/tools" className="mt-10" />
         </PageContainer>
       </main>
       <SiteFooter />

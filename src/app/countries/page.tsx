@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { CountryDirectorySection } from "@/components/country-directory-section";
 import { DataVerificationNotice } from "@/components/data-verification-notice";
 import { DirectoryHero, PageContainer } from "@/components/layout/page-container";
+import { HubCrossLinks } from "@/components/seo/hub-cross-links";
 import { JsonLd } from "@/components/seo/json-ld";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -64,6 +65,7 @@ export default function CountriesPage() {
           <Suspense fallback={<DirectoryLoading />}>
             <CountryDirectorySection items={items} />
           </Suspense>
+          <HubCrossLinks excludeHref="/countries" className="mt-12" />
         </PageContainer>
       </main>
 

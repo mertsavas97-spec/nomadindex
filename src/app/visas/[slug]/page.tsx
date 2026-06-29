@@ -17,6 +17,7 @@ import { DataTrustFooter } from "@/components/data-trust-footer";
 import { JsonLd } from "@/components/seo/json-ld";
 import { InternalLinksSection } from "@/components/seo/internal-links-section";
 import { MetricCard } from "@/components/metric-card";
+import { RelatedComparisons } from "@/components/related-comparisons";
 import { RelatedGuides } from "@/components/guides/related-guides";
 import { RelatedVisas } from "@/components/related-visas";
 import { SiteFooter } from "@/components/site-footer";
@@ -36,11 +37,13 @@ import {
   getAllCountries,
   getAllVisaPrograms,
   getCountryBySlug,
+  getFeaturedComparisonsForCountry,
   getGuidesForVisa,
   getRelatedVisasSameCountry,
   getRelatedVisasSameType,
   getVisaBySlug,
 } from "@/data";
+import { visaPageLinks } from "@/lib/internal-links";
 import { formatCurrencyAmount, formatMinIncome } from "@/lib/format";
 import {
   REQUIREMENT_LEVEL_LABELS,
@@ -159,6 +162,14 @@ export default async function VisaDetailPage({ params }: PageProps) {
   );
   const sameType = getRelatedVisasSameType(program.type, program.slug);
   const relatedGuides = getGuidesForVisa(program.slug);
+  const relatedComparisons = getFeaturedComparisonsForCountry(
+    program.countrySlug,
+    6
+  );
+  const relatedPageLinks = visaPageLinks(program, country, {
+    sameCountry,
+    sameType,
+  });
   const semantic = generateVisaSemanticContent(program, country);
   const faqs = semantic.faqs;
   const pageTitle = VISA_METADATA_TITLE(program.name, country.name);
@@ -353,6 +364,11 @@ export default async function VisaDetailPage({ params }: PageProps) {
 
         <section className="border-t border-border/60 bg-neutral-bg/40 py-12 sm:py-16">
           <div className="mx-auto max-w-6xl space-y-12 px-4 sm:px-6 lg:px-8">
+            <RelatedComparisons
+              pairs={relatedComparisons}
+              title="Related comparisons"
+              description={`Side-by-side comparisons involving ${country.name}.`}
+            />
             <RelatedVisas
               title="Other programs in this country"
               description={`More visa options in ${country.name}.`}
@@ -413,35 +429,7 @@ export default async function VisaDetailPage({ params }: PageProps) {
         </section>
 
         <section className="mx-auto max-w-6xl px-4 pb-12 sm:px-6 lg:px-8">
-          <InternalLinksSection
-            title="Related pages"
-            links={[
-              {
-                href: "/methodology",
-                label: "Data methodology",
-              },
-              {
-                href: `/countries/${country.slug}`,
-                label: `${country.flagEmoji} ${country.name} overview`,
-              },
-              {
-                href: `/compare?a=${country.slug}`,
-                label: "Compare this country",
-              },
-              {
-                href: "/tools/visa-eligibility-checker",
-                label: "Visa Pathway Matcher",
-              },
-              {
-                href: "/tools/income-requirement-calculator",
-                label: "Income Requirement Calculator",
-              },
-              {
-                href: "/guides",
-                label: "Relocation guides",
-              },
-            ]}
-          />
+          <InternalLinksSection title="Related pages" links={relatedPageLinks} />
         </section>
 
         <section className="border-t border-border/60 py-8">

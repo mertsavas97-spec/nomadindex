@@ -38,6 +38,7 @@ export function GuideRelatedLinks({ guide }: GuideRelatedLinksProps) {
 
   const utilityLinks: { href: string; label: string; description?: string }[] =
     [
+      { href: "/methodology", label: "Data methodology" },
       { href: "/countries", label: "Country directory" },
       { href: "/visas", label: "Visa program directory" },
       { href: "/compare", label: "Compare countries" },

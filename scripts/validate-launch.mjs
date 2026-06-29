@@ -128,7 +128,7 @@ try {
   const countries = (readFileSync(join(root, "src/data/countries.ts"), "utf8").match(/slug: "/g) ?? []).length;
   const visas = (readFileSync(join(root, "src/data/visa-programs.ts"), "utf8").match(/slug: "/g) ?? []).length;
   const guides = (readFileSync(join(root, "src/data/guide-records.ts"), "utf8").match(/slug: "/g) ?? []).length;
-  const staticPages = 11;
+  const staticPages = 13;
   const tools = 4;
   const comparePairs = (countries * (countries - 1)) / 2;
   const expectedSitemap = staticPages + countries + visas + comparePairs + tools + guides;

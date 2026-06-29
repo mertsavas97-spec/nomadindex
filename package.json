@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "validate:launch": "node scripts/validate-launch.mjs",
+    "audit:links": "node scripts/audit-internal-links.mjs",
     "generate:favicons": "node scripts/generate-favicons.mjs"
   },
   "dependencies": {

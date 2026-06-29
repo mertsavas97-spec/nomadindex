@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Calendar } from "lucide-react";
 
 import { CompareNarrativeContent, CompareChooseCountrySection, CompareFaqSection } from "@/components/compare/compare-rich-content";
+import { ComparePairNavigation } from "@/components/compare/compare-pair-navigation";
 import { CompareCountryCard } from "@/components/compare-country-card";
 import { CompareTable } from "@/components/compare-table";
+import { RelatedGuides } from "@/components/guides/related-guides";
 import { PageContainer, PageHero } from "@/components/layout/page-container";
 import { JsonLd } from "@/components/seo/json-ld";
 import { InternalLinksSection } from "@/components/seo/internal-links-section";
@@ -15,12 +17,14 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { VisaProgramCard } from "@/components/visa-program-card";
 import {
+  getAdjacentComparisonPairs,
   getAllCountryPairs,
   getCountryComparisonData,
   getGuidesForCountry,
   getRelatedComparisons,
-  parseComparisonPairSlug,
+  resolveComparisonPairRoute,
 } from "@/data";
+import { comparePageLinks } from "@/lib/internal-links";
 import {
   buildBreadcrumbJsonLd,
   buildCompareWebPageJsonLd,
@@ -49,15 +53,15 @@ export const dynamicParams = false;
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { pair } = await params;
-  const parsed = parseComparisonPairSlug(pair);
+  const resolved = resolveComparisonPairRoute(pair);
 
-  if (!parsed) {
+  if (!resolved) {
     return createNotFoundMetadata("Comparison not found");
   }
 
   const data = getCountryComparisonData(
-    parsed.countryASlug,
-    parsed.countryBSlug
+    resolved.countryASlug,
+    resolved.countryBSlug
   );
 
   if (!data) {
@@ -84,15 +88,19 @@ function formatLastUpdated(date: string): string {
 
 export default async function ComparePairPage({ params }: PageProps) {
   const { pair } = await params;
-  const parsed = parseComparisonPairSlug(pair);
+  const resolved = resolveComparisonPairRoute(pair);
 
-  if (!parsed) {
+  if (!resolved) {
     notFound();
   }
 
+  if (resolved.shouldRedirect) {
+    redirect(`/compare/${resolved.canonicalSlug}`);
+  }
+
   const data = getCountryComparisonData(
-    parsed.countryASlug,
-    parsed.countryBSlug
+    resolved.countryASlug,
+    resolved.countryBSlug
   );
 
   if (!data) {
@@ -103,9 +111,18 @@ export default async function ComparePairPage({ params }: PageProps) {
     data.countryASlug,
     data.countryBSlug
   );
+  const navigation = getAdjacentComparisonPairs(data.slug);
   const content = generateComparePageContent(data);
-  const guidesA = getGuidesForCountry(data.countryASlug).slice(0, 2);
-  const guidesB = getGuidesForCountry(data.countryBSlug).slice(0, 2);
+  const guidesA = getGuidesForCountry(data.countryASlug);
+  const guidesB = getGuidesForCountry(data.countryBSlug);
+  const relatedGuides = [...guidesA, ...guidesB].filter(
+    (guide, index, all) => all.findIndex((g) => g.slug === guide.slug) === index
+  );
+  const exploreLinks = comparePageLinks(data.countryASlug, data.countryBSlug, {
+    visasA: data.visasA,
+    visasB: data.visasB,
+    guides: relatedGuides,
+  });
   const metaDescription = COMPARE_METADATA_DESCRIPTION(
     data.countryA.name,
     data.countryB.name
@@ -297,51 +314,21 @@ export default async function ComparePairPage({ params }: PageProps) {
 
         <PageContainer className="section-padding">
           <RelatedComparisons pairs={related} />
+          <div className="mt-12">
+            <RelatedGuides
+              guides={relatedGuides.slice(0, 4)}
+              title="Related guides"
+              description={`Planning playbooks covering ${data.countryA.name}, ${data.countryB.name} or both.`}
+            />
+          </div>
           <InternalLinksSection
             title="Explore further"
-            links={[
-              { href: "/compare", label: "All country comparisons" },
-              { href: "/methodology", label: "Data methodology" },
-              {
-                href: `/countries/${data.countryA.slug}`,
-                label: `${data.countryA.flagEmoji} ${data.countryA.name} country guide`,
-              },
-              {
-                href: `/countries/${data.countryB.slug}`,
-                label: `${data.countryB.flagEmoji} ${data.countryB.name} country guide`,
-              },
-              ...data.visasA.slice(0, 2).map((program) => ({
-                href: `/visas/${program.slug}`,
-                label: `${data.countryA.flagEmoji} ${program.name}`,
-              })),
-              ...data.visasB.slice(0, 2).map((program) => ({
-                href: `/visas/${program.slug}`,
-                label: `${data.countryB.flagEmoji} ${program.name}`,
-              })),
-              ...guidesA.map((guide) => ({
-                href: `/guides/${guide.slug}`,
-                label: `Guide: ${guide.title}`,
-              })),
-              ...guidesB.map((guide) => ({
-                href: `/guides/${guide.slug}`,
-                label: `Guide: ${guide.title}`,
-              })),
-              { href: "/visas", label: "All visa programs" },
-              { href: "/guides", label: "Relocation guides" },
-              {
-                href: "/tools/country-comparison-tool",
-                label: "Country Comparison Tool",
-              },
-              {
-                href: "/tools/income-requirement-calculator",
-                label: "Income Requirement Calculator",
-              },
-              {
-                href: "/tools/visa-eligibility-checker",
-                label: "Visa Pathway Matcher",
-              },
-            ]}
+            links={exploreLinks}
             className="mt-12"
+          />
+          <ComparePairNavigation
+            previous={navigation.previous}
+            next={navigation.next}
           />
         </PageContainer>
 

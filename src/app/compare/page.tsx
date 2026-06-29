@@ -6,6 +6,7 @@ import { CompareSelector } from "@/components/compare-selector";
 import { ComparisonPreview } from "@/components/comparison-preview";
 import { DataVerificationNotice } from "@/components/data-verification-notice";
 import { DirectoryHero, PageContainer } from "@/components/layout/page-container";
+import { HubCrossLinks } from "@/components/seo/hub-cross-links";
 import { JsonLd } from "@/components/seo/json-ld";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -165,6 +166,34 @@ export default function ComparePage() {
 
         <section className="border-t border-border/60 bg-neutral-bg/40 section-padding">
           <PageContainer>
+            <h2 className="section-heading">Browse all comparison pages</h2>
+            <p className="section-lead">
+              Every unique country pair has a dedicated compare page — {getAllCountryPairs().length} total.
+            </p>
+            <div className="mt-8 columns-1 gap-x-8 sm:columns-2 lg:columns-3">
+              {getAllCountryPairs().map((pair) => {
+                const countryA = getCountryBySlug(pair.countryASlug);
+                const countryB = getCountryBySlug(pair.countryBSlug);
+                if (!countryA || !countryB) {
+                  return null;
+                }
+
+                return (
+                  <Link
+                    key={pair.slug}
+                    href={`/compare/${pair.slug}`}
+                    className="mb-2 block text-sm text-primary-dark hover:text-primary hover:underline"
+                  >
+                    {countryA.name} vs {countryB.name}
+                  </Link>
+                );
+              })}
+            </div>
+          </PageContainer>
+        </section>
+
+        <section className="border-t border-border/60 bg-neutral-bg/40 section-padding">
+          <PageContainer>
             <h2 className="section-heading">How does NomadIndex compare countries?</h2>
             <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               <div className="rounded-xl border border-border/60 bg-background p-5 transition-shadow hover:shadow-sm">
@@ -228,6 +257,7 @@ export default function ComparePage() {
             </Link>
           </div>
           <DataTrustFooter className="mt-6" />
+          <HubCrossLinks excludeHref="/compare" className="mt-10" />
         </PageContainer>
       </main>
 

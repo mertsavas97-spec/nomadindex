@@ -25,6 +25,7 @@ export {
 export {
   comparisonDataToPreviewRows,
   comparisonToRows,
+  getAdjacentComparisonPairs,
   getAllCountryPairs,
   getComparePair,
   getComparisonPairSlug,
@@ -40,6 +41,7 @@ export {
   getRelatedComparisons,
   hasUnverifiedFields,
   parseComparisonPairSlug,
+  resolveComparisonPairRoute,
 } from "@/data/comparisons";
 
 export {

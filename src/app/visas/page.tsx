@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { DataVerificationNotice } from "@/components/data-verification-notice";
 import { DirectoryHero, PageContainer } from "@/components/layout/page-container";
+import { HubCrossLinks } from "@/components/seo/hub-cross-links";
 import { JsonLd } from "@/components/seo/json-ld";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -68,6 +69,7 @@ export default function VisasPage() {
         <PageContainer className="section-padding">
           <DataVerificationNotice variant="inline" className="mb-8" />
           <VisaDirectoryClient items={items} />
+          <HubCrossLinks excludeHref="/visas" className="mt-12" />
         </PageContainer>
 
         <section className="border-t border-border/60 py-10 sm:py-12">

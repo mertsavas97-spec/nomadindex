@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-import { getAllCountryPairs } from "@/data/comparisons";
+import { getAllCountryPairs, getCountryComparisonData } from "@/data/comparisons";
 import { getAllCountries } from "@/data/countries";
 import { getAllGuides } from "@/data/guides";
 import { getAllVisaPrograms } from "@/data/visa-programs";
@@ -105,12 +105,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
   );
 
   const compareRoutes: MetadataRoute.Sitemap = getAllCountryPairs().map(
-    (pair) => ({
-      url: absoluteUrl(`/compare/${pair.slug}`),
-      lastModified: now,
-      changeFrequency: "monthly",
-      priority: 0.6,
-    })
+    (pair) => {
+      const data = getCountryComparisonData(pair.countryASlug, pair.countryBSlug);
+      return {
+        url: absoluteUrl(`/compare/${pair.slug}`),
+        lastModified: new Date(data?.lastUpdated ?? now),
+        changeFrequency: "monthly" as const,
+        priority: 0.6,
+      };
+    }
   );
 
   const toolRoutes: MetadataRoute.Sitemap = TOOL_LINKS.map((tool) => ({

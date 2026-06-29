@@ -5,6 +5,7 @@ import {
   createLegalPageMetadata,
   LegalPageLayout,
 } from "@/components/layout/legal-page-layout";
+import { HubCrossLinks } from "@/components/seo/hub-cross-links";
 import { SourceConfidenceBadge } from "@/components/source-confidence-badge";
 import { VerificationBadge } from "@/components/verification-badge";
 import {
@@ -275,6 +276,13 @@ export default function MethodologyPage() {
           <Link href="/privacy">Privacy Policy</Link>
         </li>
       </ul>
+
+      <div className="not-prose mt-10">
+        <HubCrossLinks
+          title="Explore NomadIndex data"
+          description="Browse countries, visas, comparisons, guides and planning tools."
+        />
+      </div>
     </LegalPageLayout>
   );
 }
