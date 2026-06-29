@@ -32,6 +32,12 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
+        source: "/:path*",
+        has: [{ type: "host", value: "www.nomadindex.app" }],
+        destination: "https://nomadindex.app/:path*",
+        permanent: true,
+      },
+      {
         source: "/visas/uk-self-sponsorship",
         destination: "/visas/uk-skilled-worker",
         permanent: true,

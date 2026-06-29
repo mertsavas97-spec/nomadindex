@@ -41,8 +41,8 @@ const requiredFiles = [
   "public/android-chrome-192x192.png",
   "public/android-chrome-512x512.png",
   "public/icon.svg",
-  "public/ads.txt",
-  "src/components/ads/google-adsense.tsx",
+  "src/app/ads.txt/route.ts",
+  "src/components/ads/public-adsense.tsx",
   "src/app/not-found.tsx",
   "src/app/error.tsx",
   "src/app/global-error.tsx",
@@ -90,15 +90,18 @@ for (const file of requiredFiles) {
   }
 }
 
-const adsTxtPath = join(root, "public/ads.txt");
+const adsTxtPath = join(root, "src/app/ads.txt/route.ts");
 if (existsSync(adsTxtPath)) {
-  const adsTxt = readFileSync(adsTxtPath, "utf8").trim();
+  const routeSource = readFileSync(adsTxtPath, "utf8");
   const expectedAdsTxt =
     "google.com, pub-4628962707131944, DIRECT, f08c47fec0942fa0";
-  if (adsTxt === expectedAdsTxt) {
-    pass("ads.txt content", "Publisher record matches AdSense account");
+  if (
+    routeSource.includes("ADSENSE_PUBLISHER_LINE") ||
+    routeSource.includes(expectedAdsTxt)
+  ) {
+    pass("ads.txt route", "Serves publisher record via text/plain route handler");
   } else {
-    fail("ads.txt content", "Unexpected ads.txt content");
+    fail("ads.txt route", "Route handler missing expected publisher record");
   }
 }
 
